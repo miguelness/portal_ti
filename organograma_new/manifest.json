@@ -1,0 +1,27 @@
+{
+  "name": "Organograma Grupo Barão",
+  "short_name": "Organograma",
+  "description": "Organograma interativo do Grupo Barão",
+  "start_url": "/organograma_new/index2.php",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "../assets/img/logo/logo-cores.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "../assets/img/logo/logo-cores.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "pt-BR",
+  "dir": "ltr"
+}

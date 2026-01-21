@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste API Colaboradores</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Teste API Colaboradores</h1>
+    
+    <form id="test-form">
+        <div>
+            <label>Nome:</label>
+            <input type="text" id="nome" value="Teste Frontend" required>
+        </div>
+        <div>
+            <label>Empresa:</label>
+            <input type="text" id="empresa" value="Empresa Frontend" required>
+        </div>
+        <div>
+            <label>Setor:</label>
+            <input type="text" id="setor" value="TI" required>
+        </div>
+        <div>
+            <label>Email:</label>
+            <input type="email" id="email" value="frontend@teste.com" required>
+        </div>
+        <div>
+            <label>Ramal:</label>
+            <input type="text" id="ramal" value="9999">
+        </div>
+        <div>
+            <label>Status:</label>
+            <select id="status">
+                <option value="ativo">Ativo</option>
+                <option value="inativo">Inativo</option>
+            </select>
+        </div>
+        <button type="submit">Testar Cadastro</button>
+    </form>
+    
+    <div id="result"></div>
+    
+    <script>
+        $('#test-form').on('submit', function(e) {
+            e.preventDefault();
+            
+            const data = {
+                nome: $('#nome').val(),
+                empresa: $('#empresa').val(),
+                setor: $('#setor').val(),
+                email: $('#email').val(),
+                ramal: $('#ramal').val(),
+                status: $('#status').val()
+            };
+            
+            console.log('Enviando dados:', data);
+            
+            $.ajax({
+                url: 'api/colaboradores.php',
+                method: 'POST',
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                success: function(response) {
+                    console.log('Sucesso:', response);
+                    $('#result').html('<div style="color: green;">Sucesso: ' + JSON.stringify(response) + '</div>');
+                },
+                error: function(xhr) {
+                    console.log('Erro completo:', xhr);
+                    console.log('Status:', xhr.status);
+                    console.log('Response Text:', xhr.responseText);
+                    
+                    $('#result').html('<div style="color: red;">Erro: ' + xhr.responseText + '</div>');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

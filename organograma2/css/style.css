@@ -1,0 +1,74 @@
+:root{
+  --bg:#f6f8fb; --panel:#fff; --stroke:#d6d9df;
+  --primary:#2f6fdc; --text:#1f2937; --muted:#6b7280;
+  --link:#97a6ba;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; }
+body { font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, Arial; background: var(--bg); }
+
+.toolbar{
+  position: fixed; top: 0; left: 0; right: 0; height: 56px;
+  background: #fff; border-bottom: 1px solid var(--stroke);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; z-index: 10;
+}
+.toolbar .left, .toolbar .right { display:flex; gap:8px; align-items:center; }
+.toolbar input, .toolbar select, .toolbar button { height: 32px; }
+
+#orgChart{
+  position: absolute; top: 56px; left: 0; right: 0; bottom: 0;
+  min-height: calc(100vh - 56px);
+  background: #f0f4f8;
+  overflow: auto;
+  border-top: 1px solid var(--stroke);
+}
+
+/* SVG container */
+svg{ display:block; }
+
+/* links */
+.link{
+  fill:none; stroke: var(--link); stroke-width: 1.6px; stroke-opacity: .85;
+}
+
+/* nós */
+.node { cursor: pointer; }
+.node rect.card{
+  fill: #fff; stroke: var(--stroke); stroke-width: 1.25; rx: 10;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.06));
+  transition: stroke .15s ease, filter .15s ease;
+}
+.node:hover rect.card{
+  stroke: var(--primary);
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,.10));
+}
+.level-bar{ fill: var(--primary); rx: 10; }
+
+/* textos */
+.node .name{ font-weight:700; font-size:13px; fill:var(--text); }
+.node .role{ font-weight:500; font-size:11.5px; fill:var(--muted); }
+.node .dept{ font-size:10.5px; fill:#344a7a; }
+
+/* botão indicador (+/−) */
+.node .bubble{
+  fill:#12b886; stroke:#fff; stroke-width:2;
+}
+.node.collapsed .bubble{ fill:#12b886; }
+.node.expanded .bubble{ fill:#f03e3e; }
+
+/* tooltip */
+.tooltip{
+  position: fixed; display: none; pointer-events: none;
+  background: #fff; border: 1px solid var(--stroke); border-radius: 12px;
+  padding: 10px 12px; box-shadow: 0 8px 24px rgba(16,24,40,.14);
+  max-width: 320px; z-index: 1000; font-size: 13px;
+}
+.tooltip.show{ display: block; }
+.tooltip .title{ font-weight:700; margin-bottom:4px; }
+
+/* estados de filtro/busca */
+.hidden { display: none; }
+.dimmed { opacity: .32; }
