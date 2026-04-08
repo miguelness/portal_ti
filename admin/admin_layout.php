@@ -9,8 +9,12 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once 'config.php';
+require_once __DIR__ . '/../utils/scheduler_runner.php';
 
-// A variável $user_accesses já é carregada pelo check_access.php que inclui este layout
+// Roda o agendador de tarefas (Web Cron)
+if (isset($pdo)) {
+    runScheduler($pdo);
+}
 // ou deve estar disponível na sessão. Não sobrescrevê-la aqui para evitar perda de dados.
 
 if (!function_exists('hasAccess')) {
@@ -233,6 +237,7 @@ if (!isset($user_accesses)) {
                                     <?php if (hasAccess('Super Administrador', $user_accesses)): ?>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="servidores_admin.php">Monitorar Servidores</a>
+                                    <a class="dropdown-item" href="scheduler_admin.php">Agendador de Tarefas</a>
                                     <a class="dropdown-item" href="../status_servidores.php" target="_blank">Status dos Sistemas</a>
                                     <?php endif; ?>
                                 </div>
