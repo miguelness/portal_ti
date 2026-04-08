@@ -1,9 +1,16 @@
-<?php
-// admin/config.php
-$host = 'localhost'; // ou IP do servidor MySQL
-$dbname = 'portal';
-$username = 'root';
-$password = '';
+require_once __DIR__ . '/../vendor/autoload.php';
+
+// Carrega o .env se o arquivo existir
+if (file_exists(__DIR__ . '/../.env')) {
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+    $dotenv->load();
+}
+
+// Dados de conexão via Variáveis de Ambiente
+$host = $_ENV['DB_HOST'] ?? 'localhost';
+$dbname = $_ENV['DB_NAME'] ?? 'portal';
+$username = $_ENV['DB_USER'] ?? 'root';
+$password = $_ENV['DB_PASS'] ?? '';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
