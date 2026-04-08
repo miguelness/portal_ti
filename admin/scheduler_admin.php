@@ -5,9 +5,15 @@
  */
 
 $pageTitle = "Agendador de Tarefas";
-require_once 'admin_layout.php';
 
-// Processamento de Ações
+// Processamento de Ações (antes de capturar o buffer)
+require_once 'config.php';
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+// Verificação básica de acesso (Super Admin)
+if (!isset($_SESSION['acessos']) || !in_array('Super Administrador', $_SESSION['acessos'])) {
+    die("Acesso negado.");
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] === 'toggle') {
         $id = $_POST['id'];
@@ -20,6 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 // Busca tarefas
 $stmt = $pdo->query("SELECT * FROM scheduler_tasks ORDER BY nome ASC");
 $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+ob_start();
 ?>
 
 <div class="page-header d-print-none">
@@ -95,3 +103,8 @@ $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 </div>
+
+<?php
+$content = ob_get_clean();
+require_once 'admin_layout.php';
+?>
