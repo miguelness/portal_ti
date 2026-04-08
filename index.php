@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 
 // Lê a mensagem de sucesso do report (se existir) e remove da sessão
@@ -168,6 +168,15 @@ $tablerColors = [
     '#e64980', '#6c757d', '#198754', '#dc3545', '#0dcaf0', '#ffc107', '#6f42c1',
     '#20c997', '#fd7e14', '#e83e8c', '#6610f2', '#0d6efd', '#198754'
 ];
+
+// Consulta servidores para monitoramento compacto
+$serversMonitor = [];
+try {
+    $stmtSrv = $pdo->query("SELECT nome, status, tempo_resposta_ms FROM monitoramento_servidores WHERE exibir_dashboard = 1 AND status_registro = 'ativo' ORDER BY nome ASC");
+    $serversMonitor = $stmtSrv->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    // Tabela pode não existir ainda ou erro na query
+}
 
 ?>
 <!DOCTYPE html>
@@ -1379,6 +1388,57 @@ $tablerColors = [
             .treinamento-body { flex-direction: column; }
             .treinamento-playlist-col { border-top: 1px solid var(--border-color); }
         }
+
+        /* Estilos Monitoramento Compacto */
+        .server-status-compact {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: 15px;
+            padding-left: 15px;
+            border-left: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+        .server-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            transition: var(--transition-smooth);
+        }
+        .server-tag:hover {
+            transform: translateY(-1px);
+            border-color: var(--text-primary);
+        }
+        .dot-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .dot-online { background-color: #2fb344; box-shadow: 0 0 5px #2fb344; }
+        .dot-lento { background-color: #f59f00; box-shadow: 0 0 5px #f59f00; }
+        .dot-offline { background-color: #dc3545; box-shadow: 0 0 5px #dc3545; }
+        .server-ms {
+            font-size: 0.65rem;
+            opacity: 0.7;
+            font-weight: 400;
+        }
+        @media (max-width: 900px) {
+            .server-status-compact {
+                margin-left: 0;
+                padding-left: 0;
+                border-left: none;
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
     </style>
 
 </head>
@@ -1402,6 +1462,27 @@ $tablerColors = [
         <div class="hero">
             <h1 class="hero-title">Portal do Grupo Barão</h1>
             <p class="hero-subtitle">• Ferramentas corporativas</p>
+            
+            <?php if (!empty($serversMonitor)): ?>
+            <div class="server-status-compact">
+                <?php foreach ($serversMonitor as $srv): 
+                    $dotClass = 'dot-offline';
+                    if ($srv['status'] === 'online') $dotClass = 'dot-online';
+                    elseif ($srv['status'] === 'lento') $dotClass = 'dot-lento';
+                ?>
+                <div class="server-tag" title="Status: <?php echo ucfirst($srv['status']); ?>">
+                    <span class="dot-status <?php echo $dotClass; ?>"></span>
+                    <?php echo htmlspecialchars($srv['nome']); ?>
+                    <?php if ($srv['status'] !== 'offline' && !empty($srv['tempo_resposta_ms'])): ?>
+                        <span class="server-ms"><?php echo $srv['tempo_resposta_ms']; ?>ms</span>
+                    <?php endif; ?>
+                </div>
+                <?php endforeach; ?>
+                <a href="status_servidores.php" class="server-tag" style="background: rgba(32,107,196,0.1); border-color: rgba(32,107,196,0.2); color: #206bc4;">
+                    <i class="ti ti-plus" style="font-size: 0.7rem;"></i> Ver todos
+                </a>
+            </div>
+            <?php endif; ?>
         </div>
 
         <!-- System Links Grid -->
