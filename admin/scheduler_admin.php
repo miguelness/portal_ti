@@ -4,16 +4,10 @@
  * Interface para gerenciar o agendador de tarefas interno
  */
 
-$pageTitle = "Agendador de Tarefas";
+$requiredAccess = 'Super Administrador';
+require_once 'check_access.php';
 
-// Processamento de Ações (antes de capturar o buffer)
-require_once 'config.php';
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
-// Verificação básica de acesso (Super Admin)
-if (!isset($_SESSION['acessos']) || !in_array('Super Administrador', $_SESSION['acessos'])) {
-    die("Acesso negado.");
-}
-
+// Processamento de Ações
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] === 'toggle') {
         $id = $_POST['id'];
@@ -27,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 $stmt = $pdo->query("SELECT * FROM scheduler_tasks ORDER BY nome ASC");
 $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+$pageTitle = "Agendador de Tarefas";
 ob_start();
 ?>
 
