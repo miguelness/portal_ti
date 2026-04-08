@@ -18,6 +18,18 @@ foreach ($servidores as $s) {
     if ($s['tipo'] === 'interno') $grupos['Interno'][] = $s;
     else $grupos['Externo'][] = $s;
 }
+
+// Buscar logs das últimas 24 horas para os gráficos
+$logs24h = [];
+try {
+    $stmtLogs = $pdo->query("SELECT servidor_id, tempo_ms, verificado_em FROM monitoramento_logs WHERE verificado_em >= DATE_SUB(NOW(), INTERVAL 24 HOUR) ORDER BY verificado_em ASC");
+    while ($row = $stmtLogs->fetch(PDO::FETCH_ASSOC)) {
+        $logs24h[$row['servidor_id']][] = [
+            'x' => strtotime($row['verificado_em']) * 1000,
+            'y' => (int)$row['tempo_ms']
+        ];
+    }
+} catch (Exception $e) {}
 ?>
 <!doctype html>
 <html lang="pt-br" data-bs-theme="light">
@@ -36,7 +48,15 @@ foreach ($servidores as $s) {
     .pulse-offline { color: #d63939; animation: pulse-red 2s infinite; }
     @keyframes pulse-green { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+    
+    .chart-container {
+        height: 60px;
+        margin-top: 15px;
+        margin-bottom: -10px;
+        width: 100%;
+    }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 <body>
   <div class="page">
@@ -106,6 +126,9 @@ foreach ($servidores as $s) {
                           <?= $s['tempo_resposta_ms'] ?>ms
                         </div>
                       </div>
+
+                      <!-- Gráfico de Oscilação (Últimas 24h) -->
+                      <div class="chart-container" id="chart-<?= $s['id'] ?>"></div>
                     </div>
                   </div>
                 </div>
@@ -142,5 +165,53 @@ foreach ($servidores as $s) {
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta19/dist/js/tabler.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const logsData = <?= json_encode($logs24h) ?>;
+        const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+        
+        Object.keys(logsData).forEach(sid => {
+            const container = document.getElementById(`chart-${sid}`);
+            if (!container) return;
+
+            const seriesData = logsData[sid];
+            
+            const options = {
+                chart: {
+                    type: 'area',
+                    height: 60,
+                    sparkline: { enabled: true },
+                    animations: { enabled: false }
+                },
+                stroke: { curve: 'smooth', width: 2 },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.3,
+                        opacityTo: 0.1,
+                        stops: [0, 90, 100]
+                    }
+                },
+                series: [{
+                    name: 'Resposta (ms)',
+                    data: seriesData
+                }],
+                colors: [isDark ? '#206bc4' : '#206bc4'],
+                tooltip: {
+                    fixed: { enabled: false },
+                    x: { show: false },
+                    y: {
+                        title: { formatter: () => 'Resposta: ' }
+                    },
+                    marker: { show: false }
+                }
+            };
+
+            const chart = new ApexCharts(container, options);
+            chart.render();
+        });
+    });
+  </script>
 </body>
 </html>

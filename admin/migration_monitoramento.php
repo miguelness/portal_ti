@@ -26,8 +26,20 @@ try {
     $pdo->exec($sql);
     echo "Tabela 'monitoramento_servidores' criada ou já existente com sucesso!\n";
 
-    // Adiciona uma coluna de acesso se ela não existir (opcional, mas bom ter para controle futuro)
-    // $pdo->exec("INSERT IGNORE INTO accesses (access_name) VALUES ('Monitoramento')");
+    // Tabela de histórico (Logs)
+    $sqlLogs = "CREATE TABLE IF NOT EXISTS monitoramento_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        servidor_id INT NOT NULL,
+        status ENUM('online', 'lento', 'offline') NOT NULL,
+        tempo_ms INT DEFAULT 0,
+        verificado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX (servidor_id),
+        INDEX (verificado_em),
+        FOREIGN KEY (servidor_id) REFERENCES monitoramento_servidores(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+    
+    $pdo->exec($sqlLogs);
+    echo "Tabela 'monitoramento_logs' criada com sucesso!\n";
 
 } catch (PDOException $e) {
     die("Erro ao criar tabela: " . $e->getMessage());

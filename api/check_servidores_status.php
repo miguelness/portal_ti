@@ -88,6 +88,14 @@ foreach ($servidores as $servidor) {
         ':status' => $status,
         ':id'     => $servidor['id']
     ]);
+
+    // Grava histórico no log
+    $logStmt = $pdo->prepare("INSERT INTO monitoramento_logs (servidor_id, status, tempo_ms) VALUES (:sid, :status, :tempo)");
+    $logStmt->execute([
+        ':sid'    => $servidor['id'],
+        ':status' => $status,
+        ':tempo'  => $tempoMs
+    ]);
 }
 
 echo "{$nl}Processamento concluído em " . date('d/m/Y H:i:s') . ".{$nl}";
