@@ -123,7 +123,7 @@ try {
     <header class="navbar navbar-expand-md d-print-none">
       <div class="container-xl">
         <h1 class="navbar-brand navbar-brand-autodark d-none-block-768">
-          <a href="index-tabler-modern.php">
+          <a href="index.php">
             <img src="assets/logo/logo-cores.png" height="30" alt="Grupo Barão" class="navbar-brand-image">
           </a>
         </h1>
@@ -134,7 +134,7 @@ try {
           <a href="#" class="nav-link px-0 hide-theme-light me-3 d-none" id="btn-theme-light" title="Habilitar modo claro" data-bs-toggle="tooltip">
             <i class="ti ti-sun fs-2"></i>
           </a>
-          <a href="index-tabler-modern.php" class="btn btn-outline-primary shadow-sm rounded-pill font-weight-medium">
+          <a href="index.php" class="btn btn-outline-primary shadow-sm rounded-pill font-weight-medium">
             <i class="ti ti-arrow-left me-1"></i> Voltar ao Portal
           </a>
         </div>
