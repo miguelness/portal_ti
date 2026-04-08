@@ -16,6 +16,8 @@ try {
         tempo_resposta_ms INT DEFAULT 0,
         ultima_verificacao DATETIME NULL,
         verificar_estabilidade TINYINT(1) DEFAULT 1,
+        exibir_dashboard TINYINT(1) DEFAULT 0,
+        status_registro ENUM('ativo', 'inativo') DEFAULT 'ativo',
         tempo_bom_ms INT DEFAULT 1500,
         tempo_lento_ms INT DEFAULT 3500,
         criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
