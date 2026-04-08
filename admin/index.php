@@ -200,6 +200,12 @@ ob_start(); ?>
                                     <span>Colaboradores</span>
                                 </a>
                             </div>
+                            <div class="col-6 col-sm-4 col-md-3">
+                                <a href="organograma_admin.php" class="btn btn-outline-purple btn-icon w-100 flex-column p-3 h-100">
+                                    <i class="ti ti-hierarchy-2 mb-2" style="font-size: 1.5rem;"></i>
+                                    <span>Organograma</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -46,24 +46,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($id <= 0) {
                 throw new Exception('ID inválido para aprovação.');
             }
-            // Garante que só aprova se e-mail estiver verificado
+            // Força a aprovação MESMO sem confirmar e-mail e converte email_verified para 1 autometicamente
             $stmtCheck = $pdo->prepare('SELECT email_verified, approved FROM users WHERE id = ? LIMIT 1');
             $stmtCheck->execute([$id]);
             $row = $stmtCheck->fetch(PDO::FETCH_ASSOC);
             if (!$row) {
                 throw new Exception('Usuário não encontrado.');
             }
-            if ((int)($row['email_verified'] ?? 0) !== 1) {
-                throw new Exception('Usuário ainda não confirmou o e-mail.');
-            }
-            if ((int)($row['approved'] ?? 0) === 1) {
-                $toastMsg = 'Usuário já estava aprovado.';
+            if ((int)($row['approved'] ?? 0) === 1 && (int)($row['email_verified'] ?? 0) === 1) {
+                $toastMsg = 'Usuário já estava aprovado e verificado.';
                 $toastType = 'success';
             } else {
-                $stmtA = $pdo->prepare('UPDATE users SET approved = 1 WHERE id = ?');
+                $stmtA = $pdo->prepare('UPDATE users SET approved = 1, email_verified = 1 WHERE id = ?');
                 $stmtA->execute([$id]);
-                $toastMsg = 'Usuário aprovado.';
+                
+                // Marcar notificações relacionadas como lidas
+                try {
+                    $stmtClear = $pdo->prepare("UPDATE persistent_notifications SET is_read = 1 WHERE user_id = ? AND type = 'registration_approval'");
+                    $stmtClear->execute([$id]);
+                } catch (Exception $eClear) { }
+
+                $toastMsg = 'Usuário aprovado verificado com sucesso.';
                 $toastType = 'success';
+            }
+        } elseif ($action === 'resend_verification') {
+            $id = (int)($_POST['id'] ?? 0);
+            if ($id <= 0) throw new Exception('ID inválido.');
+            $stmtV = $pdo->prepare('SELECT username, nome, email, email_verified, verification_token FROM users WHERE id = :id LIMIT 1');
+            $stmtV->execute([':id' => $id]);
+            $usr = $stmtV->fetch(PDO::FETCH_ASSOC);
+            if (!$usr) throw new Exception('Usuário não encontrado.');
+            if (empty($usr['email'])) throw new Exception('Usuário não possui e-mail cadastrado.');
+            if ((int)$usr['email_verified'] === 1) throw new Exception('E-mail já verificado.');
+            
+            require_once __DIR__ . '/../utils/smtp_mail.php';
+            
+            // Gera um novo token
+            $token = bin2hex(random_bytes(16));
+            $pdo->prepare('UPDATE users SET verification_token = :t WHERE id = :id')->execute([':t' => $token, ':id' => $id]);
+            
+            $verifyLink = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]/portal/verify_email.php?token=" . urlencode($token) . "&u=" . $id;
+            
+            if (sendVerificationEmail($usr['email'], $usr['nome'] ?: $usr['username'], $verifyLink)) {
+                $toastMsg = 'E-mail de confirmação reenviado para ' . $usr['email'];
+                $toastType = 'success';
+            } else {
+                throw new Exception('Falha ao enviar e-mail. Verifique o log do SMTP.');
+            }
+        } elseif ($action === 'send_password_reset') {
+            $id = (int)($_POST['id'] ?? 0);
+            if ($id <= 0) throw new Exception('ID inválido.');
+            $stmtP = $pdo->prepare('SELECT username, nome, email FROM users WHERE id = :id LIMIT 1');
+            $stmtP->execute([':id' => $id]);
+            $usr = $stmtP->fetch(PDO::FETCH_ASSOC);
+            if (!$usr) throw new Exception('Usuário não encontrado.');
+            if (empty($usr['email'])) throw new Exception('E-mail não cadastrado para enviar senha.');
+            
+            require_once __DIR__ . '/../utils/smtp_mail.php';
+            
+            // Gera senha forte de 8 caracters
+            $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*';
+            $novaSenha = substr(str_shuffle($chars), 0, 8);
+            $hashed = password_hash($novaSenha, PASSWORD_DEFAULT);
+            
+            $pdo->prepare('UPDATE users SET password = :p WHERE id = :id')->execute([':p' => $hashed, ':id' => $id]);
+            
+            if (sendPasswordResetEmail($usr['email'], $usr['nome'] ?: $usr['username'], $novaSenha)) {
+                $toastMsg = 'Nova senha gerada e enviada por e-mail para o usuário!';
+                $toastType = 'success';
+            } else {
+                throw new Exception('Banco atualizado mas e-mail falhou. Nova senha: ' . $novaSenha);
             }
         }
     } catch (Throwable $e) {
@@ -218,33 +270,53 @@ ob_start();
               </td>
               <td class="text-muted"><span class="badge bg-secondary">Protegida</span></td>
               <td>
-                <div class="btn-list flex-nowrap">
-                  <button type="button" class="btn btn-white btn-sm btn-edit"
-                          title="Editar usuário"
-                          data-id="<?= (int)$usr['id'] ?>"
-                          data-username="<?= htmlspecialchars($usr['username']) ?>"
-                          data-email="<?= htmlspecialchars($usr['email'] ?? '') ?>"
-                          data-bs-toggle="modal" data-bs-target="#modalEditarUsuario">
-                    <i class="ti ti-edit"></i>
+                <div class="dropdown">
+                  <button class="btn btn-white btn-sm dropdown-toggle align-text-top" data-bs-toggle="dropdown">
+                    <i class="ti ti-settings me-1"></i> Ações
                   </button>
-                  <a href="user_excluir.php?id=<?= (int)$usr['id'] ?>" class="btn btn-white btn-sm text-danger" title="Excluir usuário" onclick="return confirm('Excluir este usuário?');">
-                    <i class="ti ti-trash"></i>
-                  </a>
-                  <?php if ((int)($usr['approved'] ?? 0) !== 1): ?>
-                    <?php if ((int)($usr['email_verified'] ?? 0) === 1): ?>
-                      <form method="post" action="" class="d-inline">
-                        <input type="hidden" name="action" value="approve">
-                        <input type="hidden" name="id" value="<?= (int)$usr['id'] ?>">
-                        <button type="submit" class="btn btn-white btn-sm text-success" title="Aprovar">
-                          <i class="ti ti-checks"></i>
-                        </button>
-                      </form>
-                    <?php else: ?>
-                      <button type="button" class="btn btn-white btn-sm" title="Aguardando verificação de e-mail" disabled>
-                        <i class="ti ti-mail-question"></i>
-                      </button>
+                  <div class="dropdown-menu dropdown-menu-end">
+                    <a class="dropdown-item" href="#" data-id="<?= (int)$usr['id'] ?>" data-username="<?= htmlspecialchars($usr['username']) ?>" data-email="<?= htmlspecialchars($usr['email'] ?? '') ?>" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario">
+                      <i class="ti ti-edit me-2"></i> Editar Dados Básicos
+                    </a>
+                    
+                    <div class="dropdown-divider"></div>
+                    
+                    <?php if ((int)($usr['approved'] ?? 0) !== 1 || (int)($usr['email_verified'] ?? 0) !== 1): ?>
+                        <form method="post" action="" style="display:inline;" onsubmit="return confirm('Deseja aprovar e verificar o acesso deste usuário?');">
+                          <input type="hidden" name="action" value="approve">
+                          <input type="hidden" name="id" value="<?= (int)$usr['id'] ?>">
+                          <button type="submit" class="dropdown-item text-success">
+                            <i class="ti ti-checks me-2"></i> Aprovar e Verificar Imediatamente
+                          </button>
+                        </form>
                     <?php endif; ?>
-                  <?php endif; ?>
+
+                    <?php if (!empty($usr['email'])): ?>
+                        <?php if ((int)($usr['email_verified'] ?? 0) !== 1): ?>
+                            <form method="post" action="" style="display:inline;">
+                              <input type="hidden" name="action" value="resend_verification">
+                              <input type="hidden" name="id" value="<?= (int)$usr['id'] ?>">
+                              <button type="submit" class="dropdown-item text-primary" title="Enviar novamente o e-mail de confirmação para acesso do usuário">
+                                <i class="ti ti-mail-forward me-2"></i> Reenviar Confirmação de E-mail
+                              </button>
+                            </form>
+                        <?php endif; ?>
+                        
+                        <form method="post" action="" style="display:inline;" onsubmit="return confirm('ATENÇÃO: Isso irá alterar a senha do usuário e enviar uma nova chave por e-mail para ele. Continuar?');">
+                          <input type="hidden" name="action" value="send_password_reset">
+                          <input type="hidden" name="id" value="<?= (int)$usr['id'] ?>">
+                          <button type="submit" class="dropdown-item text-orange">
+                            <i class="ti ti-key me-2"></i> Gerar e Enviar Nova Senha
+                          </button>
+                        </form>
+                    <?php endif; ?>
+
+                    <div class="dropdown-divider"></div>
+                    
+                    <a class="dropdown-item text-danger" href="user_excluir.php?id=<?= (int)$usr['id'] ?>" onclick="return confirm('Tem absoluta certeza que deseja excluir esse usuário?');">
+                      <i class="ti ti-trash me-2"></i> Excluir Usuário
+                    </a>
+                  </div>
                 </div>
               </td>
             </tr>

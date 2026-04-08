@@ -7,7 +7,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Portal Grupo Barão</title>
+  <title>Portal do Grupo Barão</title>
   <!-- Tabler core e ícones -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta19/dist/css/tabler.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
@@ -151,6 +151,12 @@ if (session_status() === PHP_SESSION_NONE) session_start();
             <span class="icon bg-purple-lt text-purple"><i class="ti ti-bolt"></i></span>
             <div class="title">Atualizações</div>
             <div class="subtitle">Maxtrade</div>
+          </a>
+        <div class="col-6 col-md-4 col-xl-2">
+          <a class="card portal-card accent-green d-block" href="status_servidores.php" aria-label="Status dos Sistemas" tabindex="0" role="button">
+            <span class="icon bg-green-lt text-green"><i class="ti ti-activity"></i></span>
+            <div class="title">Status</div>
+            <div class="subtitle">dos Sistemas</div>
           </a>
         </div>
       </div>

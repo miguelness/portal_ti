@@ -83,4 +83,22 @@ body {
     right: 20px;
     z-index: 9999;
   }
+
+  /* Destaque para cards de novidades (Glow discreto) */
+  .card-novidade {
+    /* Define uma borda um pouco mais visível, usando um tom azul padrão (ou a cor primária se existir) */
+    border: 1px solid rgba(32, 107, 196, 0.4) !important;
+    animation: glow-novidade 2.5s infinite alternate ease-in-out;
+  }
+  
+  @keyframes glow-novidade {
+    0% {
+      /* Sombra muito suave, quase invisível */
+      box-shadow: 0 0 4px rgba(32, 107, 196, 0.1);
+    }
+    100% {
+      /* Brilho acentuado, mas sem exageros, expandindo sutilmente */
+      box-shadow: 0 0 14px rgba(32, 107, 196, 0.5);
+    }
+  }
   

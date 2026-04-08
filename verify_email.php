@@ -20,6 +20,24 @@ if ($token !== '') {
             $upd = $pdo->prepare('UPDATE users SET email_verified = 1, verified_at = NOW(), verification_token = NULL WHERE id = ?');
             $upd->execute([(int)$user['id']]);
             $status = 'verified';
+
+            // Notificar administradores
+            try {
+                $stmtUser = $pdo->prepare("SELECT username FROM users WHERE id = ?");
+                $stmtUser->execute([(int)$user['id']]);
+                $username = $stmtUser->fetchColumn();
+
+                $stmtNotify = $pdo->prepare("INSERT INTO persistent_notifications (user_id, title, message, type, required_access) VALUES (?, ?, ?, ?, ?)");
+                $stmtNotify->execute([
+                    (int)$user['id'],
+                    "Novo cadastro para aprovar",
+                    "O usuário '$username' confirmou o e-mail e aguarda aprovação.",
+                    "registration_approval",
+                    "Gestão de Usuários"
+                ]);
+            } catch (Exception $eNotify) {
+                // Silently fail notification if DB error
+            }
         } elseif ($user && (int)$user['email_verified'] === 1) {
             $status = 'already';
         } else {

@@ -58,6 +58,12 @@ $user_accesses = $stmt->fetchAll(PDO::FETCH_COLUMN);
           </li>
         <?php endif; ?>
         
+        <?php if (hasAccess('Super Administrador', $user_accesses) || hasAccess('Sugestões', $user_accesses) || hasAccess('Gestão de Usuários', $user_accesses)): ?>
+          <li class="nav-item">
+            <a class="nav-link" href="sugestoes_admin.php">Sugestões</a>
+          </li>
+        <?php endif; ?>
+        
         <!-- Menu RH -->
         <?php if (hasAccess('Documentos RH', $user_accesses) || hasAccess('Gestão de Colaboradores', $user_accesses) || hasAccess('Super Administrador', $user_accesses)): ?>
           <li class="nav-item dropdown">
@@ -72,6 +78,7 @@ $user_accesses = $stmt->fetchAll(PDO::FETCH_COLUMN);
                 <li><hr class="dropdown-divider"></li>
                 <li><h6 class="dropdown-header">Colaboradores</h6></li>
                 <li><a class="dropdown-item" href="colaboradores.php"><i class="fas fa-users"></i> Gerenciar</a></li>
+                <li><a class="dropdown-item" href="organograma_admin.php"><i class="fas fa-sitemap"></i> Organograma</a></li>
                 <li><a class="dropdown-item" href="colaboradores_import.php"><i class="fas fa-file-import"></i> Importar Planilha</a></li>
               <?php endif; ?>
             </ul>

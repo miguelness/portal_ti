@@ -83,6 +83,26 @@ if (!isset($user_accesses)) {
                         <a href="?theme=light" class="nav-link px-0 hide-theme-light" title="Enable light mode" data-bs-toggle="tooltip" data-bs-placement="bottom">
                             <i class="ti ti-sun"></i>
                         </a>
+                        
+                        <!-- Notificações -->
+                        <div class="nav-item dropdown d-none d-md-flex me-3">
+                            <a href="#" class="nav-link px-0" data-bs-toggle="dropdown" tabindex="-1" aria-label="Show notifications" id="btn-notifications">
+                                <i class="ti ti-bell"></i>
+                                <span class="badge bg-red d-none" id="notification-count"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-arrow dropdown-menu-end dropdown-menu-card">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Notificações</h3>
+                                    </div>
+                                    <div class="list-group list-group-flush list-group-hoverable" id="notification-list">
+                                        <div class="list-group-item">
+                                            <div class="text-muted text-center p-2">Nenhuma notificação nova</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
@@ -124,6 +144,21 @@ if (!isset($user_accesses)) {
                             </li>
                             <?php endif; ?>
 
+                            <?php if (hasAccess('Super Administrador', $user_accesses)): ?>
+                            <li class="nav-item <?= ($pageTitle == 'Gerenciar Treinamentos e Políticas') ? 'active' : '' ?>">
+                                <a class="nav-link" href="treinamentos_admin.php">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-video"></i></span>
+                                    <span class="nav-link-title">Treinamentos</span>
+                                </a>
+                            </li>
+                            <li class="nav-item <?= ($pageTitle == 'Gestão de IPs Internos') ? 'active' : '' ?>">
+                                <a class="nav-link" href="ips_admin.php">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-network"></i></span>
+                                    <span class="nav-link-title">IPs Internos</span>
+                                </a>
+                            </li>
+                            <?php endif; ?>
+
                             <?php if (hasAccess('Feeds', $user_accesses) || hasAccess('Feeds RH', $user_accesses)): ?>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#navbar-base" data-bs-toggle="dropdown" data-bs-auto-close="outside" role="button" aria-expanded="false">
@@ -147,6 +182,15 @@ if (!isset($user_accesses)) {
                                 <a class="nav-link" href="reports_admin.php">
                                     <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-chart-bar"></i></span>
                                     <span class="nav-link-title">Reports</span>
+                                </a>
+                            </li>
+                            <?php endif; ?>
+
+                            <?php if (hasAccess('Super Administrador', $user_accesses) || hasAccess('Sugestões', $user_accesses) || hasAccess('Gestão de Usuários', $user_accesses)): ?>
+                            <li class="nav-item <?= ($pageTitle == 'Caixa de Sugestões') ? 'active' : '' ?>">
+                                <a class="nav-link" href="sugestoes_admin.php">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block"><i class="ti ti-message-2-share"></i></span>
+                                    <span class="nav-link-title">Sugestões</span>
                                 </a>
                             </li>
                             <?php endif; ?>
@@ -257,6 +301,45 @@ if (!isset($user_accesses)) {
                     document.body.appendChild(modal);
                 }
             });
+
+            // Notificações Logic
+            function loadNotifications() {
+                fetch('api_notifications.php?action=list_unread')
+                    .then(res => res.json())
+                    .then(res => {
+                        if (res.success && res.data.length > 0) {
+                            $('#notification-count').text(res.data.length).removeClass('d-none');
+                            let html = '';
+                            res.data.forEach(n => {
+                                html += `
+                                    <div class="list-group-item">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto"><span class="status-dot status-dot-animated bg-red d-block"></span></div>
+                                            <div class="col text-truncate">
+                                                <a href="users_admin.php" class="text-body d-block" onclick="markAsRead(${n.id})">${n.title}</a>
+                                                <div class="d-block text-muted text-truncate mt-n1">
+                                                    ${n.message}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            $('#notification-list').html(html);
+                        } else {
+                            $('#notification-count').addClass('d-none');
+                            $('#notification-list').html('<div class="list-group-item"><div class="text-muted text-center p-2">Nenhuma notificação nova</div></div>');
+                        }
+                    });
+            }
+
+            window.markAsRead = function(id) {
+                fetch('api_notifications.php?action=mark_read&id=' + id);
+            }
+
+            // Carrega inicialmente e a cada 60 segundos
+            loadNotifications();
+            setInterval(loadNotifications, 60000);
         });
     </script>
     

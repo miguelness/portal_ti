@@ -12,79 +12,17 @@ if (isset($_SESSION['incident_success'])) {
 if (isset($_POST['incident_submit'])) {
     // ... (código de inserção no banco, etc.)
     $_SESSION['incident_success'] = "Relatório enviado com sucesso. Obrigado por informar!";
-    header("Location: index.php");
+    header("Location: index_v2026.php");
     exit;
 }
 
 // Carrega config do banco
 include_once 'admin/config.php';
 
-// PROCESSAMENTO DO FORMULÁRIO DE SUGESTÕES
-$sugestaoMessage = null;
-if (isset($_SESSION['sugestao_success'])) {
-    $sugestaoMessage = $_SESSION['sugestao_success'];
-    unset($_SESSION['sugestao_success']);
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['sugestao_submit'])) {
-    $nome = !empty($_POST['sugestao_nome']) ? trim($_POST['sugestao_nome']) : null;
-    $mensagem = trim($_POST['sugestao_mensagem']);
-    if (!empty($mensagem)) {
-        try {
-            $stmtSug = $pdo->prepare("INSERT INTO sugestoes (nome, mensagem) VALUES (:nome, :mensagem)");
-            $stmtSug->execute([':nome' => $nome, ':mensagem' => $mensagem]);
-            $_SESSION['sugestao_success'] = "Sua sugestão foi enviada com sucesso. Obrigado!";
-        } catch (PDOException $e) {
-            $_SESSION['sugestao_success'] = "Erro ao enviar sugestão. Tente novamente mais tarde.";
-        }
-    }
-    header("Location: index.php");
-    exit;
-}
-
 // Consulta links do menu
-$sql = "SELECT id, titulo, descricao, url, icone, cor, tamanho, parent_id, target_blank, ordem, status, is_novidade, is_treinamento, is_interno, verificar_estabilidade, link_status, tempo_resposta_ms FROM menu_links WHERE status='ativo' ORDER BY ordem ASC";
+$sql = "SELECT id, titulo, descricao, url, icone, cor, tamanho, parent_id, target_blank, ordem, status FROM menu_links WHERE status='ativo' ORDER BY ordem ASC";
 $stmt = $pdo->query($sql);
 $links = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// --- Controle de Acesso por IP ---
-// Detecta o IP real do visitante
-$visitorIp = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
-if (strpos($visitorIp, ',') !== false) {
-    $visitorIp = trim(explode(',', $visitorIp)[0]);
-}
-// Também trata ::1 (IPv6 localhost) como 127.0.0.1
-if ($visitorIp === '::1') {
-    $visitorIp = '127.0.0.1';
-}
-
-// Consulta faixas de IP internas ativas
-$ipsInternos = $pdo->query("SELECT ip_inicio, ip_fim FROM ips_internos WHERE status = 'ativo'")->fetchAll(PDO::FETCH_ASSOC);
-
-// Verifica se o visitante está na rede interna
-$isInternal = false;
-$visitorIpLong = ip2long($visitorIp);
-if ($visitorIpLong !== false) {
-    foreach ($ipsInternos as $faixa) {
-        $inicioLong = ip2long($faixa['ip_inicio']);
-        if ($faixa['ip_fim']) {
-            $fimLong = ip2long($faixa['ip_fim']);
-            if ($visitorIpLong >= $inicioLong && $visitorIpLong <= $fimLong) {
-                $isInternal = true;
-                break;
-            }
-        } else {
-            // IP único
-            if ($visitorIpLong === $inicioLong) {
-                $isInternal = true;
-                break;
-            }
-        }
-    }
-}
-
-// Nota: links internos NÃO são removidos. Eles permanecem visíveis,
-// mas ao clicar, quem estiver fora da rede interna verá um alerta.
 
 /**
  * Função para mapear ícones para SVG (Extraída do original - não alterada)
@@ -94,27 +32,6 @@ function getIconSvg($icone) {
     // Usaremos a biblioteca Tabler Icons (apenas os ícones em formato webfont) para manter os ícones funcionando,
     // já que o CSS será totalmente customizado e não dependerá do framework CSS Tabler.
     return '<i class="' . htmlspecialchars($icone) . '"></i>';
-}
-
-/**
- * Renderiza o badge de saúde/estabilidade do link
- */
-function renderHealthBadge($link) {
-    if (empty($link['verificar_estabilidade'])) return '';
-    
-    $status = $link['link_status'] ?? 'unknown';
-    $tempo = !empty($link['tempo_resposta_ms']) ? $link['tempo_resposta_ms'] . 'ms' : '';
-    
-    switch ($status) {
-        case 'online':
-            return '<div class="health-badge status-online" title="Tempo de resposta: ' . $tempo . '"><span class="status-dot"></span> Online</div>';
-        case 'lento':
-            return '<div class="health-badge status-lento" title="Resposta lenta: ' . $tempo . '"><i class="ti ti-alert-triangle"></i> Lento</div>';
-        case 'offline':
-            return '<div class="health-badge status-offline" title="Link inacessível ('. $tempo .')"><i class="ti ti-wifi-off"></i> Offline</div>';
-        default:
-            return '';
-    }
 }
 
 /**
@@ -152,15 +69,6 @@ $sqlMaxtrade = "SELECT * FROM noticias
                 ORDER BY data_publicacao DESC LIMIT 2";
 $stmtMaxtrade = $pdo->query($sqlMaxtrade);
 $maxtradeNews = $stmtMaxtrade->fetchAll(PDO::FETCH_ASSOC);
-
-// Consulta vídeos de treinamento e políticas (com menu_link_id para filtrar por grupo)
-$sqlVideos = "SELECT id, titulo, descricao, url_video, ordem, status, menu_link_id FROM videos_treinamento WHERE status = 'ativo' ORDER BY ordem ASC, id DESC";
-$treinamentos = $pdo->query($sqlVideos)->fetchAll(PDO::FETCH_ASSOC);
-
-$sqlAnx = "SELECT * FROM videos_anexos ORDER BY criado_em ASC";
-$todosAnx = $pdo->query($sqlAnx)->fetchAll(PDO::FETCH_ASSOC);
-$anexosTr = [];
-foreach($todosAnx as $ax) { $anexosTr[$ax['video_id']][] = $ax; }
 
 // Paleta de cores (Extraída do original)
 $tablerColors = [
@@ -491,60 +399,6 @@ $tablerColors = [
             transition: var(--transition-bounce);
             position: relative;
         }
-
-        /* Health Status Badge */
-        .health-badge {
-            position: absolute;
-            top: 1rem;
-            right: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            z-index: 5;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            pointer-events: none;
-        }
-        .status-online {
-            background: rgba(43, 182, 115, 0.15);
-            color: #2bb673;
-            border: 1px solid rgba(43, 182, 115, 0.2);
-        }
-        .status-lento {
-            background: rgba(247, 103, 7, 0.15);
-            color: #f76707;
-            border: 1px solid rgba(247, 103, 7, 0.2);
-            animation: pulse-slow 2s infinite;
-        }
-        .status-offline {
-            background: rgba(214, 57, 57, 0.15);
-            color: #d63939;
-            border: 1px solid rgba(214, 57, 57, 0.2);
-            animation: pulse-fast 1s infinite;
-        }
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: currentColor;
-        }
-
-        @keyframes pulse-slow {
-            0% { opacity: 1; }
-            50% { opacity: 0.6; }
-            100% { opacity: 1; }
-        }
-        @keyframes pulse-fast {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
         .card:hover .card-icon-wrapper {
             transform: scale(1.1);
             background: var(--card-color);
@@ -574,47 +428,6 @@ $tablerColors = [
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-        }
-
-        /* Destaque para cards e submenus de novidades (Chamativo e com Badge Laranja) */
-        .card-novidade {
-            border: 2px solid rgba(255, 136, 0, 0.6) !important;
-            animation: glow-novidade 1.5s infinite alternate ease-in-out;
-            z-index: 5;
-            position: relative;
-            overflow: visible !important;
-        }
-        
-        .card-novidade::after {
-            content: "NOVIDADE";
-            position: absolute;
-            top: -12px;
-            right: -10px;
-            background: linear-gradient(135deg, #ff9800, #ff5722);
-            color: white;
-            padding: 4px 10px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            border-radius: 20px;
-            box-shadow: 0 4px 10px rgba(255, 100, 0, 0.4);
-            z-index: 10;
-            animation: bounce-badge 2s infinite ease-in-out;
-            letter-spacing: 0.05em;
-        }
-        
-        @keyframes glow-novidade {
-            0% {
-                box-shadow: 0 0 5px rgba(255, 136, 0, 0.4);
-            }
-            100% {
-                box-shadow: 0 0 20px rgba(255, 100, 0, 0.9), 0 0 40px rgba(255, 80, 0, 0.4);
-                border-color: rgba(255, 136, 0, 1) !important;
-            }
-        }
-        
-        @keyframes bounce-badge {
-            0%, 100% { transform: translateY(0) rotate(5deg); }
-            50% { transform: translateY(-3px) rotate(5deg) scale(1.05); }
         }
 
         .section-header {
@@ -816,35 +629,6 @@ $tablerColors = [
             transform: scale(1) translateY(0);
             opacity: 1;
         }
-        
-        /* Floating Button - Sugestões */
-        .btn-floating-sugestao {
-            position: fixed;
-            bottom: 2rem;
-            left: 2rem;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #6f42c1 0%, #ae3ec9 100%);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 15px rgba(111, 66, 193, 0.4);
-            cursor: pointer;
-            z-index: 900;
-            transition: var(--transition-bounce);
-            border: none;
-        }
-        .btn-floating-sugestao:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(111, 66, 193, 0.6);
-        }
-        [data-theme="dark"] .btn-floating-sugestao {
-            box-shadow: 0 4px 15px rgba(192, 132, 252, 0.4);
-        }
-
         .modal-header {
             padding: 1.5rem 2rem;
             display: flex;
@@ -1075,21 +859,6 @@ $tablerColors = [
             max-height: 600px;
         }
 
-        /* Custom Scrollbar for Notifications */
-        .notification-body::-webkit-scrollbar {
-            width: 4px;
-        }
-        .notification-body::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .notification-body::-webkit-scrollbar-thumb {
-            background: rgba(0,0,0,0.1);
-            border-radius: 10px;
-        }
-        [data-theme="dark"] .notification-body::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.2);
-        }
-
         @keyframes slideInRight {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
@@ -1167,10 +936,7 @@ $tablerColors = [
             opacity: 1;
             pointer-events: all;
             height: auto;
-            max-height: 450px;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding-right: 8px;
+            overflow: visible;
         }
 
         .notification-item.alert-success { border-left-color: #198754; }
@@ -1283,103 +1049,8 @@ $tablerColors = [
         .modal.fade:not(.modal-overlay) {
             display: none !important;
         }
-
-        /* Treinamentos Modal */
-        .modal-treinamento .modal-content-wrapper {
-            max-width: 1100px;
-            width: 95%;
-            height: 85vh;
-            display: flex;
-            flex-direction: column;
-            padding: 0;
-            overflow: hidden;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-        }
-        [data-theme="dark"] .modal-treinamento .modal-content-wrapper { background: rgba(30, 30, 35, 0.95); }
-        .treinamento-header {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .treinamento-body {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-        .treinamento-player-col {
-            flex: 7;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--border-color);
-            background: #000;
-        }
-        .treinamento-video-container {
-            flex: 1;
-            position: relative;
-            background: #000;
-        }
-        .treinamento-video-container iframe {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%; border: 0;
-        }
-        .treinamento-anexos {
-            background: var(--bg-card);
-            padding: 1.5rem;
-            min-height: 180px;
-            overflow-y: auto;
-        }
-        .treinamento-playlist-col {
-            flex: 3;
-            display: flex;
-            flex-direction: column;
-            background: var(--bg-card);
-        }
-        .treinamento-playlist-header {
-            padding: 1rem 1.5rem;
-            font-weight: 600;
-            font-size: 1.1rem;
-            border-bottom: 1px solid var(--border-color);
-            background: var(--bg-body);
-        }
-        .treinamento-playlist-items {
-            flex: 1;
-            overflow-y: auto;
-        }
-        .treinamento-item {
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-        }
-        .treinamento-item:hover { background: var(--bg-body); }
-        .treinamento-item.active {
-            background: rgba(32, 107, 196, 0.08);
-            border-left: 4px solid #206bc4;
-        }
-        .treinamento-item-icon {
-            width: 48px; height: 48px;
-            border-radius: 12px;
-            background: rgba(32, 107, 196, 0.15);
-            color: #206bc4;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem;
-            margin-right: 1rem; flex-shrink: 0;
-        }
-        .treinamento-item-title { font-weight: 600; font-size: 1.05rem; margin-bottom: 0.25rem; }
-        .treinamento-item-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.3; }
-
-        /* Estilização para celulares */
-        @media (max-width: 768px) {
-            .treinamento-body { flex-direction: column; }
-            .treinamento-playlist-col { border-top: 1px solid var(--border-color); }
-        }
     </style>
+
 
 </head>
 <body>
@@ -1387,7 +1058,7 @@ $tablerColors = [
     <!-- Header -->
     <header>
         <div class="container header-content">
-            <a href="index.php">
+            <a href="index_v2026.php">
                 <img src="assets/img/avatars/logo-cores.png" alt="Portal do Grupo Barão" class="logo">
             </a>
             <button class="btn-icon" id="themeToggle" title="Alternar Tema">
@@ -1442,67 +1113,28 @@ $tablerColors = [
                     
                     $colorIndex++;
                 ?>
-
-                <?php 
-                    $isTreinamento = !empty($parentLink['is_treinamento']);
-                    $glowClass = (!empty($parentLink['is_novidade'])) ? 'card-novidade' : '';
-                    $isInternoLink = !empty($parentLink['is_interno']);
-                    // Se o link é interno e o visitante NÃO é interno, intercepta o click
-                    $bloqueado = ($isInternoLink && !$isInternal);
-                ?>
-
-                <?php if ($bloqueado): ?>
-                    <!-- Link bloqueado para acesso externo -->
-                    <div class="card <?php echo $glowClass; ?>" 
-                         style="--card-color: <?php echo $cor; ?>; --card-rgb: <?php echo $rgb; ?>; opacity: 0.7; filter: grayscale(30%);"
-                         onclick="showInternoAlert()">
-                        <div class="card-icon-wrapper">
-                            <?php echo getIconSvg($icone); ?>
-                        </div>
-                        <?php echo renderHealthBadge($parentLink); ?>
-                        <div class="card-content">
-                            <h3><?php echo htmlspecialchars($titulo); ?></h3>
-                            <p><?php echo htmlspecialchars($descricao); ?></p>
-                        </div>
-                    </div>
-
-                <?php elseif ($isTreinamento): ?>
-                    <div class="card <?php echo $glowClass; ?>" 
-                         style="--card-color: <?php echo $cor; ?>; --card-rgb: <?php echo $rgb; ?>;"
-                         onclick="openTreinamentosModal(<?php echo (int)$parentLink['id']; ?>)">
-                        <div class="card-icon-wrapper">
-                            <?php echo getIconSvg($icone); ?>
-                        </div>
-                        <?php echo renderHealthBadge($parentLink); ?>
-                        <div class="card-content">
-                            <h3><?php echo htmlspecialchars($titulo); ?></h3>
-                            <p><?php echo htmlspecialchars($descricao); ?></p>
-                        </div>
-                    </div>
-
-                <?php elseif ($hasChildren || empty($url)): 
+                    
+                <?php if ($hasChildren || empty($url)): 
                     $modalID = "modal-" . $modalCount;
                     $modalCount++;
                 ?>
-                    <div class="card <?php echo $glowClass; ?>" 
+                    <div class="card" 
                          style="--card-color: <?php echo $cor; ?>; --card-rgb: <?php echo $rgb; ?>;"
                          onclick="openModal('<?php echo $modalID; ?>')">
                         <div class="card-icon-wrapper">
                             <?php echo getIconSvg($icone); ?>
                         </div>
-                        <?php echo renderHealthBadge($parentLink); ?>
                         <div class="card-content">
                             <h3><?php echo htmlspecialchars($titulo); ?></h3>
                             <p><?php echo htmlspecialchars($descricao); ?></p>
                         </div>
                     </div>
                 <?php else: ?>
-                    <a href="<?php echo $url; ?>" target="<?php echo $target; ?>" class="card <?php echo $glowClass; ?>"
+                    <a href="<?php echo $url; ?>" target="<?php echo $target; ?>" class="card"
                        style="--card-color: <?php echo $cor; ?>; --card-rgb: <?php echo $rgb; ?>;">
                         <div class="card-icon-wrapper">
                             <?php echo getIconSvg($icone); ?>
                         </div>
-                        <?php echo renderHealthBadge($parentLink); ?>
                         <div class="card-content">
                             <h3><?php echo htmlspecialchars($titulo); ?></h3>
                             <p><?php echo htmlspecialchars($descricao); ?></p>
@@ -1670,7 +1302,6 @@ $tablerColors = [
                         $childIcone = $child['icone'] ?: 'ti ti-link';
                         $childTarget = $child['target_blank'] ? "_blank" : "_self";
                         $tamanhoClass = !empty($child['tamanho']) ? $child['tamanho'] : 'col-lg-2 col-md-4';
-                        $childGlow = (!empty($child['is_novidade'])) ? 'card-novidade' : '';
                         
                         $childCorHex = $childCor ?: '#206bc4';
                         $cHexToClean = ltrim($childCorHex, '#');
@@ -1686,36 +1317,20 @@ $tablerColors = [
                         $crgb = "$cr, $cg, $cb";
                     ?>
                         <div class="<?php echo htmlspecialchars($tamanhoClass); ?>">
-                            <?php 
-                                $childBloqueado = (!empty($child['is_interno']) && !$isInternal);
-                            ?>
-                            <?php if ($childBloqueado): ?>
-                                <div class="submenu-card <?php echo $childGlow; ?>" 
-                                     style="--card-color: <?php echo $childCor; ?>; --card-rgb: <?php echo $crgb; ?>; opacity: 0.5; filter: grayscale(40%); cursor: pointer;"
-                                     onclick="closeModal('<?php echo $modalID; ?>'); setTimeout(function(){ showInternoAlert(); }, 350);">
-                                    <div class="submenu-icon">
-                                        <?php echo getIconSvg($childIcone); ?>
-                                    </div>
-                                    <?php echo renderHealthBadge($child); ?>
-                                    <h4><?php echo htmlspecialchars($childTitulo); ?></h4>
-                                    <p><?php echo htmlspecialchars($childDescricao); ?></p>
-                                </div>
-                            <?php elseif (!empty($childURL)): ?>
+                            <?php if (!empty($childURL)): ?>
                                 <a href="<?php echo $childURL; ?>" target="<?php echo $childTarget; ?>" 
-                                   class="submenu-card <?php echo $childGlow; ?>" style="--card-color: <?php echo $childCor; ?>; --card-rgb: <?php echo $crgb; ?>;">
+                                   class="submenu-card" style="--card-color: <?php echo $childCor; ?>; --card-rgb: <?php echo $crgb; ?>;">
                                     <div class="submenu-icon">
                                         <?php echo getIconSvg($childIcone); ?>
                                     </div>
-                                    <?php echo renderHealthBadge($child); ?>
                                     <h4><?php echo htmlspecialchars($childTitulo); ?></h4>
                                     <p><?php echo htmlspecialchars($childDescricao); ?></p>
                                 </a>
                             <?php else: ?>
-                                <div class="submenu-card <?php echo $childGlow; ?>" style="--card-color: <?php echo $childCor; ?>; --card-rgb: <?php echo $crgb; ?>;">
+                                <div class="submenu-card" style="--card-color: <?php echo $childCor; ?>; --card-rgb: <?php echo $crgb; ?>;">
                                     <div class="submenu-icon">
                                         <?php echo getIconSvg($childIcone); ?>
                                     </div>
-                                    <?php echo renderHealthBadge($child); ?>
                                     <h4><?php echo htmlspecialchars($childTitulo); ?></h4>
                                     <p><?php echo htmlspecialchars($childDescricao); ?></p>
                                 </div>
@@ -1876,193 +1491,6 @@ $tablerColors = [
             });
         });
 
-    <?php if(isset($treinamentos)): ?>
-    </script>
-    <div class="modal-overlay modal-treinamento" id="modalTreinamentos">
-        <div class="modal-content-wrapper fade-in">
-            <div class="treinamento-header">
-                <h3 class="m-0"><i class="ti ti-school me-2 text-primary"></i> Centro de Treinamentos e Políticas Corporativas</h3>
-                <button class="close-modal" onclick="closeModal('modalTreinamentos')"><i class="ti ti-x"></i></button>
-            </div>
-            <div class="treinamento-body" id="treinamentoRenderer">
-                <!-- Preenchido via JS -->
-            </div>
-        </div>
-    </div>
-    <script>
-        const treinamentosData = <?= json_encode($treinamentos) ?>;
-        const anexosData = <?= json_encode($anexosTr) ?>;
-        let currentFilteredVideos = []; // Vídeos filtrados para o grupo atual
-        
-        function renderTreinamento(id) {
-            const tr = currentFilteredVideos.find(t => t.id == id);
-            if(!tr) return;
-            
-            const anexos = anexosData[id] || [];
-            let anexosHtml = '';
-            if(anexos.length > 0) {
-                anexosHtml = `<h4 class="mb-3" style="font-weight: 600; color: var(--text-primary);"><i class="ti ti-paperclip me-1"></i> Documentos em Anexo</h4><div class="d-flex flex-wrap gap-2">`;
-                anexos.forEach(a => {
-                    anexosHtml += `<a href="uploads_treinamentos/${a.caminho_arquivo}" target="_blank" class="btn btn-sm" style="background:var(--bg-body); border:1px solid var(--border-color); color:var(--text-primary); text-decoration:none; padding:10px 16px; border-radius:8px; display:inline-flex; align-items:center; transition: all 0.2s;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='var(--bg-body)'"><i class="ti ti-file-download me-2" style="font-size:1.2rem; color:#d63384;"></i> <span style="font-weight:500;">${a.nome_documento}</span></a>`;
-                });
-                anexosHtml += `</div>`;
-            } else {
-                anexosHtml = `<div class="text-muted"><i class="ti ti-info-circle me-1"></i> Este treinamento não possui documentos em anexo.</div>`;
-            }
-            
-            let playlistHtml = '';
-            currentFilteredVideos.forEach(t => {
-                const isActive = t.id == id ? 'active' : '';
-                playlistHtml += `
-                    <div class="treinamento-item ${isActive}" onclick="renderTreinamento(${t.id})">
-                        <div class="treinamento-item-icon"><i class="ti ti-player-play-filled"></i></div>
-                        <div>
-                            <div class="treinamento-item-title">${t.titulo}</div>
-                            <div class="treinamento-item-desc">${t.descricao ? t.descricao.substring(0, 80) + '...' : ''}</div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            // Tratamento inteligente de URLs
-            let finalUrl = tr.url_video;
-            
-            // Corrige YouTube (watch -> embed)
-            if (finalUrl.includes('youtube.com/watch?v=')) {
-                let videoId = new URL(finalUrl).searchParams.get('v');
-                if (videoId) finalUrl = `https://www.youtube.com/embed/${videoId}`;
-            } 
-            // Corrige YouTube (youtu.be -> embed)
-            else if (finalUrl.includes('youtu.be/')) {
-                let videoId = finalUrl.split('youtu.be/')[1].split('?')[0];
-                finalUrl = `https://www.youtube.com/embed/${videoId}`;
-            }
-            // Corrige Vimeo genérico (vimeo.com/xxxxx -> player.vimeo.com/video/xxxxx)
-            else if (finalUrl.includes('vimeo.com/') && !finalUrl.includes('player.vimeo.com')) {
-                let vimeoParts = finalUrl.split('vimeo.com/');
-                let idPart = vimeoParts[1].split('?')[0].split('/')[0];
-                let videoId = idPart.replace(/\D/g, '');
-                
-                if (videoId) {
-                    finalUrl = `https://player.vimeo.com/video/${videoId}`;
-                }
-            }
-            
-            const html = `
-                <div class="treinamento-player-col">
-                    <div class="treinamento-video-container">
-                        <iframe src="${finalUrl}" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-                    </div>
-                    <div class="treinamento-anexos">
-                        ${anexosHtml}
-                    </div>
-                </div>
-                <div class="treinamento-playlist-col">
-                    <div class="treinamento-playlist-header"><i class="ti ti-list me-1"></i> Conteúdos (${currentFilteredVideos.length})</div>
-                    <div class="treinamento-playlist-items">
-                        ${playlistHtml}
-                    </div>
-                </div>
-            `;
-            document.getElementById('treinamentoRenderer').innerHTML = html;
-        }
-        
-        function openTreinamentosModal(menuLinkId) {
-            // Filtra os vídeos pelo menu_link_id do cartão clicado
-            currentFilteredVideos = treinamentosData.filter(t => t.menu_link_id == menuLinkId);
-            
-            if(currentFilteredVideos.length > 0) {
-                renderTreinamento(currentFilteredVideos[0].id);
-            } else {
-                document.getElementById('treinamentoRenderer').innerHTML = '<div class="p-5 w-100 text-center text-muted"><i class="ti ti-video-off fs-1 mb-3"></i><br><h4>Ainda não há treinamentos cadastrados nesta categoria.</h4></div>';
-            }
-            openModal('modalTreinamentos');
-        }
-    <?php endif; ?>
-
-
-    <!-- Modal de Alerta: Acesso Interno -->
-    </script>
-    <div class="modal-overlay" id="modalInternoAlert">
-        <div class="modal-content" style="max-width: 420px; border-radius: 20px; overflow: hidden; padding: 0;">
-            <div style="background: linear-gradient(135deg, #d63939 0%, #e25050 100%); padding: 2.5rem 2rem 1.5rem; text-align: center; color: white;">
-                <i class="ti ti-lock" style="font-size: 3.5rem; margin-bottom: 0.75rem; display: block; opacity: 0.9;"></i>
-                <h3 style="margin: 0; font-size: 1.4rem; font-weight: 700;">Acesso Restrito</h3>
-            </div>
-            <div style="padding: 2rem; text-align: center; background: var(--bg-card);">
-                <p style="font-size: 1.05rem; color: var(--text-primary); margin: 0 0 0.5rem; font-weight: 600;">
-                    Este recurso é de <strong>uso interno</strong>.
-                </p>
-                <p style="font-size: 0.88rem; color: var(--text-secondary); margin: 0 0 1.75rem; line-height: 1.6;">
-                    O acesso a este link está disponível apenas dentro da rede corporativa. 
-                    Conecte-se à rede interna da empresa ou utilize a VPN para acessar.
-                </p>
-                <button onclick="closeModal('modalInternoAlert')" 
-                        style="background: linear-gradient(135deg, #d63939 0%, #e25050 100%); color: white; border: none; padding: 0.75rem 2.5rem; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(214,57,57,0.3);"
-                        onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 16px rgba(214,57,57,0.4)'" 
-                        onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 12px rgba(214,57,57,0.3)'">
-                    <i class="ti ti-check me-1"></i> Entendi
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Botão Flutuante de Sugestões -->
-    <button class="btn-floating-sugestao" onclick="openModal('modalSugestoes')" title="Deixe sua sugestão">
-        <i class="ti ti-message-2-share"></i>
-    </button>
-
-    <!-- Modal de Sugestões -->
-    <div class="modal-overlay <?= $sugestaoMessage ? 'active' : '' ?>" id="modalSugestoes">
-        <div class="modal-content" style="max-width: 500px;">
-            <div class="modal-header" style="border-bottom: 1px solid var(--border-color);">
-                <h3 style="margin: 0; font-size: 1.3rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="ti ti-message-2-share" style="color: #6f42c1;"></i> Deixe sua Sugestão
-                </h3>
-                <button onclick="closeModal('modalSugestoes')" style="background: none; border: none; font-size: 1.5rem; color: var(--text-secondary); cursor: pointer; padding: 0;">&times;</button>
-            </div>
-            <div class="modal-body" style="padding: 1.5rem 2rem;">
-                
-                <?php if ($sugestaoMessage): ?>
-                <div style="background: rgba(43, 182, 115, 0.1); border-left: 4px solid #2bb673; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; display: flex; align-items: start; gap: 0.75rem;">
-                    <i class="ti ti-circle-check" style="color: #2bb673; font-size: 1.5rem;"></i>
-                    <div style="flex: 1;">
-                        <h4 style="margin: 0 0 0.25rem; color: #2bb673; font-weight: 600; font-family: var(--font-body); font-size: 0.95rem;">Sucesso!</h4>
-                        <div style="color: var(--text-secondary); font-size: 0.85rem; font-family: var(--font-body);"><?= htmlspecialchars($sugestaoMessage) ?></div>
-                    </div>
-                </div>
-                <?php else: ?>
-                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
-                    Sua opinião é muito importante! Você pode enviar uma sugestão de forma anônima ou preencher seu nome.
-                </p>
-                <?php endif; ?>
-
-                <form action="index.php" method="POST">
-                    <div style="margin-bottom: 1rem;">
-                        <label for="sugestao_nome" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">Nome (Opcional)</label>
-                        <input type="text" id="sugestao_nome" name="sugestao_nome" placeholder="Seu nome" 
-                               style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); font-family: var(--font-body); font-size: 0.9rem;">
-                    </div>
-                    <div style="margin-bottom: 1.5rem;">
-                        <label for="sugestao_mensagem" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">Mensagem *</label>
-                        <textarea id="sugestao_mensagem" name="sugestao_mensagem" rows="4" placeholder="Escreva sua sugestão aqui..." required
-                                  style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-primary); font-family: var(--font-body); font-size: 0.9rem; resize: vertical;"></textarea>
-                    </div>
-                    <div style="text-align: right;">
-                        <button type="button" onclick="closeModal('modalSugestoes')" style="background: none; border: none; padding: 0.75rem 1.5rem; font-size: 0.9rem; color: var(--text-secondary); cursor: pointer; font-weight: 600; margin-right: 0.5rem;">Cancelar</button>
-                        <button type="submit" name="sugestao_submit" style="background: linear-gradient(135deg, #6f42c1 0%, #ae3ec9 100%); color: white; border: none; padding: 0.75rem 2rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 10px rgba(111, 66, 193, 0.3); transition: all 0.2s;">Enviar Sugestão</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <script>
-
-
-        function showInternoAlert() {
-            openModal('modalInternoAlert');
-        }
 
         // Modal Handlers
         function openModal(id) {
@@ -2078,11 +1506,6 @@ $tablerColors = [
             if(overlay) {
                 overlay.classList.remove('active');
                 document.body.style.overflow = '';
-                // Limpa o player de vídeo do DOM para impedir que ele continue tocando som atrás da tela
-                if (id === 'modalTreinamentos') {
-                    const renderer = document.getElementById('treinamentoRenderer');
-                    if(renderer) renderer.innerHTML = '';
-                }
             }
         }
 
@@ -2100,7 +1523,8 @@ $tablerColors = [
             overlay.addEventListener('click', function(e) {
                 // If click is directly on the overlay background, close it
                 if (e.target === this) {
-                    closeModal(this.id);
+                    this.classList.remove('active');
+                    document.body.style.overflow = '';
                 }
             });
         });
@@ -2110,7 +1534,8 @@ $tablerColors = [
             if (event.key === "Escape") {
                 const activeModal = document.querySelector('.modal-overlay.active');
                 if (activeModal) {
-                    closeModal(activeModal.id);
+                    activeModal.classList.remove('active');
+                    document.body.style.overflow = '';
                 }
             }
         });

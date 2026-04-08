@@ -173,33 +173,132 @@ $roots = $children[0] ?? [];
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Organograma • cartão vidro fosco</title>
+<title>Organograma • Portal</title>
+<script>
+  (function(){
+    try {
+      var t = localStorage.getItem('theme') || 'system';
+      if(t !== 'system') document.documentElement.setAttribute('data-theme', t);
+    } catch(e){}
+  })();
+</script>
 <?php if (($viewMode ?? 'org') === 'lista'): ?>
   <!-- Tabler CSS (apenas na visualização Lista) -->
   <link href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css" rel="stylesheet"/>
 <?php endif; ?>
 <style>
-  :root{
+  :root {
     --avatar: 108px;
     --gap-x: 44px;
     --gap-y: 36px;
     --min-slot-1: 260;
     --slot-2: 220;
+    --pad-bottom: 120px;
+    --footer-h: 0px;
+    --font-scale: 1;
+
+    /* Base - Light Theme Variables */
     --stroke: #cbd5e1;
-    --stroke-strong:#b8c2d3;
-    --ring-green:#22c55e;  /* nó expandível fechado */
-    --ring-gray:#cbd5e1;   /* aberto e folha */
-    --text-muted:#6b7280;
-    --pad-bottom: 180px;   /* folga para não colar na barra de rolagem */
-    --footer-h: 60px;      /* altura aproximada do rodapé fixo */
-    --font-scale: 1;       /* escala de fontes conforme zoom */
+    --stroke-strong: #94a3b8;
+    --ring-green: #22c55e;
+    --ring-gray: #cbd5e1;
+    --bg-main: #f8fafc;
+    --text-main: #0f172a;
+    --text-muted: #6b7280;
+    --accent: #0ea5e9;
+    --accent-2: #38bdf8;
+    
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-border: rgba(15, 23, 42, 0.1);
+    --card-text: #0f172a;
+    --card-sub: #475569;
+    --card-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
   }
+
+  /* Dark Theme Variables */
+  :root[data-theme="dark"] {
+    --stroke: rgba(56, 189, 248, 0.3);
+    --stroke-strong: rgba(129, 140, 248, 0.6);
+    --ring-gray: rgba(255,255,255,0.15);
+    --bg-main: #020617;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --card-bg: rgba(15, 23, 42, 0.75);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --card-text: #f8fafc;
+    --card-sub: #cbd5e1;
+    --card-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+  }
+
+  /* System Theme fallback via media query */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --stroke: rgba(56, 189, 248, 0.3);
+        --stroke-strong: rgba(129, 140, 248, 0.6);
+        --ring-gray: rgba(255,255,255,0.15);
+        --bg-main: #020617;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --card-bg: rgba(15, 23, 42, 0.75);
+        --card-border: rgba(255, 255, 255, 0.1);
+        --card-text: #f8fafc;
+        --card-sub: #cbd5e1;
+        --card-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+    }
+  }
+
   *{box-sizing:border-box}
-  html,body{ margin:0; background:#fff; color:#0f172a;
-    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans","Helvetica Neue",sans-serif }
+  html,body{ margin:0; background:var(--bg-main); color:var(--text-main); overflow:hidden;
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; transition: background 0.3s, color 0.3s; }
+
+  /* Ambient Animated Orbs */
+  .ambient-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.35;
+    animation: float 20s infinite ease-in-out alternate;
+    z-index: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  :root:not([data-theme="dark"]) .ambient-orb {
+      opacity: 0.15; /* Mais suave no tema claro */
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .ambient-orb { opacity: 0.35; }
+  }
+
+  /* Ambient Animated Orbs */
+  .ambient-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.35;
+    animation: float 20s infinite ease-in-out alternate;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .orb-1 {
+    width: 60vw; height: 60vw;
+    background: radial-gradient(circle, var(--accent-2) 0%, transparent 70%);
+    top: -20vh; left: -10vw;
+    animation-delay: -5s;
+  }
+  .orb-2 {
+    width: 50vw; height: 50vw;
+    background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+    bottom: -15vh; right: -5vw;
+    animation-duration: 25s;
+  }
+
+  @keyframes float {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(10vw, 5vh) scale(1.2); }
+  }
 
   /* viewport arrastável */
-  .wrap{ width:100vw; height:100vh; overflow:auto; margin:20px 0 0; cursor:grab }
+  .wrap{ width:100vw; height:100vh; overflow:auto; padding-top: 20px; cursor:grab; position:relative; z-index:1; }
   .wrap.dragging{ cursor:grabbing }
   body.dragging{ user-select:none; -webkit-user-select:none; }
 
@@ -213,92 +312,187 @@ $roots = $children[0] ?? [];
   .org li{ list-style:none; padding:0; text-align:center; }
 
   details{ display:inline-block }
-  summary{ list-style:none; cursor:pointer }
+  summary{ list-style:none; cursor:pointer; position:relative; z-index:2; }
   summary::-webkit-details-marker{ display:none }
 
   .person{ display:flex; flex-direction:column; align-items:center; padding:6px 10px 0; margin:0 auto; max-width:max(var(--avatar), calc(var(--min-slot-1) * 1px)); }
-  .avatar{ width:var(--avatar); height:var(--avatar); border-radius:50%; overflow:hidden; background:#e5e7eb;
-           box-shadow:0 0 0 3px #fff, 0 6px 16px rgba(22,30,50,.14); display:flex; align-items:center; justify-content:center; }
+  
+  /* Avatares com borda adaptativa */
+  .avatar{ width:var(--avatar); height:var(--avatar); border-radius:50%; overflow:hidden; background:var(--card-bg);
+           box-shadow:0 0 0 3px var(--bg-main), 0 6px 16px rgba(0,0,0,.15); display:flex; align-items:center; justify-content:center; transition: box-shadow 0.3s; }
   /* ANÉIS */
-  details.expandable:not([open]) > summary .avatar{ box-shadow:0 0 0 3px #fff, 0 0 0 6px var(--ring-green), 0 8px 18px rgba(22,30,50,.18); }
+  details.expandable:not([open]) > summary .avatar{ box-shadow:0 0 0 3px var(--bg-main), 0 0 0 6px var(--ring-green), 0 8px 18px rgba(0,0,0,.2); }
   details.expandable[open] > summary .avatar,
-  details:not(.expandable) > summary .avatar{ box-shadow:0 0 0 3px #fff, 0 0 0 6px var(--ring-gray), 0 8px 18px rgba(22,30,50,.18); }
+  details:not(.expandable) > summary .avatar{ box-shadow:0 0 0 3px var(--bg-main), 0 0 0 6px var(--ring-gray), 0 8px 18px rgba(0,0,0,.2); }
 
   .avatar img{ width:100%; height:100%; object-fit:cover; display:block }
-  .avatar-initials{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; border-radius:50%; font-weight:800; font-size: calc(24px * var(--font-scale)); color:#0f172a; }
-  .name{ font-size: calc(1.28rem * var(--font-scale)); font-weight:800; margin-top:10px; line-height:1.15; max-width:260px }
-  .title{ color:var(--text-muted); font-size: calc(.98rem * var(--font-scale)); margin-top:2px; max-width:260px }
+  .avatar-initials{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; border-radius:50%; font-weight:800; font-size: calc(24px * var(--font-scale)); color:var(--text-main); }
+  .name{ font-size: calc(1.28rem * var(--font-scale)); font-weight:800; margin-top:10px; line-height:1.15; max-width:260px; color:var(--text-main); text-shadow:0 2px 4px rgba(0,0,0,0.1); transition: color 0.3s; }
+  .title{ color:var(--text-muted); font-size: calc(.98rem * var(--font-scale)); margin-top:2px; max-width:260px; transition: color 0.3s; }
 
-  /* ===== Cartão flutuante (glass) ===== */
+  /* ==============================================================
+     NOVO DESIGN DO CARTÃO FLUTUANTE (VISION OS LIKE / COM ABAS)
+     ============================================================== */
   #hoverCard{
-    position:fixed; z-index:50; width:min(420px, calc(100vw - 24px));
-    backdrop-filter: blur(16px) saturate(145%);
-    -webkit-backdrop-filter: blur(16px) saturate(145%);
-    background: rgba(255,255,255,0.58);
-    border-radius:16px; border:1px solid rgba(255,255,255,.35);
-    box-shadow: 0 20px 60px rgba(17,24,39,.25);
-    padding:0; display:none;
+    position:fixed; z-index:90; width:min(380px, calc(100vw - 24px));
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    background: var(--card-bg);
+    border-radius:20px; 
+    border:1px solid var(--card-border);
+    box-shadow: var(--card-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    display:none;
+    overflow: hidden;
+    transform: translateY(10px) scale(0.98);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease, background 0.3s, border 0.3s;
   }
-  #hoverCard .brandbar{
-    height:72px; border-radius:16px 16px 0 0;
-    background: linear-gradient(90deg,#64748b,#94a3b8);
+  #hoverCard.show{
+    transform: translateY(0) scale(1);
+    opacity: 1;
   }
-  /* Cores por empresa */
-  .brand--barao    { background: linear-gradient(90deg,#2563eb,#60a5fa) !important; }
-  .brand--toymania { background: linear-gradient(90deg,#7c3aed,#c084fc) !important; }
-  .brand--alfaness { background: linear-gradient(90deg,#111827,#4b5563) !important; }
-  .brand--fun      { background: linear-gradient(90deg,#eab308,#fde047) !important; }
+  
+  /* Gradiente animado dinâmico na parte superior do cartão */
+  #hoverCard .brandbar {
+    height: 85px;
+    background: linear-gradient(135deg, #64748b, #94a3b8);
+    background-size: 200% 200%;
+    animation: gradientShift 4s ease infinite;
+  }
+  @keyframes gradientShift { 0%{ background-position:0% 50% } 50%{ background-position:100% 50% } 100%{ background-position:0% 50% } }
+  
+  .brand--barao    { background: linear-gradient(135deg,#2563eb,#38bdf8) !important; animation: gradientShift 6s ease infinite !important; }
+  .brand--toymania { background: linear-gradient(135deg,#7c3aed,#c084fc) !important; animation: gradientShift 6s ease infinite !important; }
+  .brand--alfaness { background: linear-gradient(135deg,#111827,#4b5563) !important; animation: gradientShift 6s ease infinite !important; }
+  .brand--fun      { background: linear-gradient(135deg,#eab308,#fde047) !important; animation: gradientShift 6s ease infinite !important; }
 
-  #hoverCard .content{ padding:20px 18px 14px 18px; }
+  #hoverCard .content{ padding:0 20px 20px 20px; }
   #hoverCard .header{
-    display:flex; gap:12px; align-items:center; margin-top:-28px;
+    display:flex; flex-direction: column; align-items:center; margin-top:-40px; text-align:center;
   }
-  #hoverCard .header > div:last-child{ margin-top:4px; }
+  
   #hoverCard .mini-avatar{
-    width:72px; height:72px; border-radius:50%;
-    box-shadow:0 0 0 3px #fff, 0 6px 14px rgba(17,24,39,.22);
-    overflow:hidden; flex:0 0 auto; background:#e5e7eb; display:flex; align-items:center; justify-content:center;
+    width:80px; height:80px; border-radius:50%;
+    border: 3px solid var(--card-bg);
+    box-shadow: 0 8px 24px rgba(0,0,0, 0.15);
+    overflow:hidden; background:#e5e7eb; display:flex; align-items:center; justify-content:center;
+    margin-bottom: 12px; transition: border-color 0.3s;
   }
   #hoverCard .mini-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
-  #hoverCard .mini-avatar .inits{ font-weight:800; color:#0f172a; }
+  #hoverCard .mini-avatar .inits{ font-weight:800; font-size: 1.5rem; color:#0f172a; }
 
-  #hoverCard .nm{ font-weight:800; font-size:1.05rem; line-height:1.15 }
-  #hoverCard .sub{ color:#475569; font-size:.92rem; margin-top:2px }
+  #hoverCard .nm{ font-weight:800; font-size:1.15rem; line-height:1.2; color: var(--card-text); transition: color 0.3s; }
+  #hoverCard .sub{ color:var(--card-sub); font-size:.9rem; margin-top:4px; font-weight: 500; transition: color 0.3s; }
 
-  #hoverCard .chips{ display:flex; gap:8px; margin:10px 0 8px; flex-wrap:wrap; }
-  .chip{
-    display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px;
-    background: rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.55); font-size:.82rem; color:#0f172a;
+  /* Sistema de Abas internas do Card */
+  #hoverCard .tabs-nav {
+    display: flex; gap: 4px; margin: 16px 0 10px; background: rgba(15, 23, 42, 0.05); padding: 4px; border-radius: 12px;
   }
+  :root[data-theme="dark"] #hoverCard .tabs-nav { background: rgba(0,0,0, 0.2); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) #hoverCard .tabs-nav { background: rgba(0,0,0, 0.2); } }
 
-  #hoverCard .actions{ display:flex; gap:8px; margin:6px 0 10px; flex-wrap:wrap; }
-  #hoverCard .actions{ align-items:center; }
-  .btn-mini{
-    display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:10px; font-weight:600;
-    background:#2563eb; color:#fff; border:none; text-decoration:none; line-height:1; min-height:36px;
-    box-shadow: 0 2px 6px rgba(17,24,39,.12);
+  #hoverCard .tabs-nav button {
+    flex: 1; background: transparent; border: none; padding: 6px 0; font-size: 0.82rem; font-weight: 600; color: var(--card-sub);
+    border-radius: 8px; cursor: pointer; transition: all 0.2s;
   }
-  .btn-mini .ico{ width:18px; height:18px; display:inline-block; }
-  .btn-mini[href^="tel:"]    { background:#059669; }
-  .btn-mini[href^="https:"]  { background:#6b7280; }
-  .btn-mini.btn-whatsapp      { background:#25D366; }
-  .btn-mini svg{ width:18px; height:18px; }
+  #hoverCard .tabs-nav button.active {
+    background: var(--card-bg); color: var(--card-text); box-shadow: 0 2px 8px rgba(0,0,0, 0.1);
+  }
+  #hoverCard .tab-pane { display: none; margin-top: 10px; animation: fadeIn 0.2s ease; }
+  #hoverCard .tab-pane.active { display: block; }
 
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Info Grid */
   #hoverCard .grid{
-    display:grid; grid-template-columns: 120px 1fr; gap:8px 12px; font-size:.9rem; margin-top:6px;
+    display:grid; grid-template-columns: 36px 1fr; gap:10px 12px; font-size:.88rem; align-items: center; color:var(--card-text);
   }
-  #hoverCard .grid .lbl{ color:#64748b }
-  #hoverCard .divider{ height:1px; background:rgba(15,23,42,.08); margin:10px 0; }
+  #hoverCard .grid .icon-wrap {
+    width: 32px; height: 32px; background: rgba(15, 23, 42, 0.04); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; color: var(--card-sub);
+  }
+  :root[data-theme="dark"] #hoverCard .grid .icon-wrap { background: rgba(255,255,255,0.05); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) #hoverCard .grid .icon-wrap { background: rgba(255,255,255,0.05); } }
 
-  /* setinha */
-  #hoverCard::after{
-    content:""; position:absolute; top:28px; width:12px; height:12px; background:inherit; border:inherit;
-    transform:rotate(45deg); z-index:-1;
+  #hoverCard .grid .icon-wrap svg { width: 16px; height: 16px; }
+  #hoverCard .grid-text { display: flex; flex-direction: column; }
+  #hoverCard .grid-text span.lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 700; margin-bottom: 2px; }
+
+  /* Botões de Contato Premium */
+  #hoverCard .actions-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; mt: 10px;
   }
-  /* lado esquerdo (seta aponta pra direita) */
-  #hoverCard.at-left::after{ right:-6px; }
-  /* lado direito (seta aponta pra esquerda) */
-  #hoverCard.at-right::after{ left:-6px; }
+  .btn-premium {
+    display:flex; flex-direction: column; align-items:center; justify-content: center; gap:4px;
+    padding:10px 4px; border-radius:12px; font-weight:600; font-size: 0.82rem;
+    background:var(--card-bg); color:var(--card-text); border: 1px solid var(--card-border);
+    text-decoration:none;
+    box-shadow: 0 4px 12px rgba(0,0,0, 0.05); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn-premium:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0, 0.15); filter: brightness(1.05); }
+  .btn-premium .ico-wrapper { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 2px; color: #fff; }
+  .btn-premium.btn-tel .ico-wrapper { background: linear-gradient(135deg, #10b981, #059669); }
+  .btn-premium.btn-wa .ico-wrapper  { background: linear-gradient(135deg, #4ade80, #16a34a); box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3); }
+  .btn-premium.btn-tm .ico-wrapper  { background: linear-gradient(135deg, #818cf8, #4f46e5); box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); }
+  .btn-premium.btn-em .ico-wrapper  { background: linear-gradient(135deg, #38bdf8, #0284c7); }
+  .btn-premium svg { width: 16px; height: 16px; }
+  
+  .chip-tag { display: inline-flex; font-size: 0.75rem; background: rgba(14, 165, 233, 0.1); color: #0284c7; padding: 2px 8px; border-radius: 4px; font-weight: 700; border: 1px solid rgba(14, 165, 233, 0.2); margin-top: 6px; }
+
+  /* EFEITO STAGGERED (ENTRADA DO ORGANOGRAMA) */
+  .org ul li {
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: slideDownIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  @keyframes slideDownIn { to { opacity: 1; transform: translateY(0); } }
+  
+  /* Lógica de Delay no CSS */
+  .org .lvl-0 > li { animation-delay: 0.1s; }
+  .org .lvl-1 > li { animation-delay: 0.25s; }
+  .org .lvl-2 > li { animation-delay: 0.4s; }
+  .org .lvl-3 > li { animation-delay: 0.55s; }
+  .org .lvl-4 > li { animation-delay: 0.7s; }
+
+  /* SPOTLIGHT SEARCH MODAL */
+  #spotlight-overlay {
+    position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+    z-index: 9999; display: none; align-items: flex-start; justify-content: center; padding-top: 12vh;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  #spotlight-overlay.active { display: flex; opacity: 1; }
+  #spotlight-modal {
+    width: 90%; max-width: 560px; background: rgba(255, 255, 255, 0.95); border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+    overflow: hidden; transform: scale(0.95); transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  #spotlight-overlay.active #spotlight-modal { transform: scale(1); }
+  
+  .spotlight-header {
+    display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  }
+  .spotlight-header svg { width: 20px; height: 20px; color: #64748b; }
+  .spotlight-header input {
+    width: 100%; border: none; background: transparent; padding: 20px 16px; font-size: 1.1rem;
+    color: #0f172a; outline: none; font-weight: 500;
+  }
+  .spotlight-header input::placeholder { color: #94a3b8; }
+  .spotlight-footer {
+    display: flex; align-items: center; justify-content: space-between; padding: 10px 20px;
+    background: #f8fafc; border-top: 1px solid rgba(15, 23, 42, 0.05); font-size: 0.75rem; color: #64748b;
+  }
+  .spotlight-kbd { background: #e2e8f0; padding: 2px 6px; border-radius: 4px; border: 1px solid #cbd5e1; font-weight: 600; color: #475569; }
+  
+  #spotlight-results { max-height: 320px; overflow-y: auto; }
+  .spotlight-item {
+    display: flex; align-items: center; padding: 12px 20px; gap: 14px; cursor: pointer; border-bottom: 1px solid rgba(15, 23, 42, 0.04);
+  }
+  .spotlight-item:hover, .spotlight-item.selected { background: #f1f5f9; }
+  .spotlight-item:last-child { border-bottom: none; }
+  .spotlight-item .ava { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #e2e8f0; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px;}
+  .spotlight-item .info { display: flex; flex-direction: column; }
+  .spotlight-item .info strong { color: #0f172a; font-size: 0.95rem; }
+  .spotlight-item .info span { color: #64748b; font-size: 0.8rem; }
 
   @media (max-width: 900px){
     :root{ --gap-x: 28px; --min-slot-1: 220; --slot-2: 200; }
@@ -317,25 +511,78 @@ $qsCommon = 'modo=' . urlencode($modoNav) . '&zoom=' . urlencode((string)$zoomPa
 ?>
 <!-- Abas de visualização + Sair -->
 <div id="tabs" style="position:fixed; left:16px; top:16px; z-index:61; display:flex; gap:8px; align-items:center;">
-  <a href="index.php?view=org&<?= $qsCommon ?>" class="tab <?= $viewMode==='org'?'active':'' ?>">Organograma</a>
-  <a href="index.php?view=lista&<?= $qsCommon ?>" class="tab <?= $viewMode==='lista'?'active':'' ?>">Lista</a>
+  <a href="index.php?view=org&<?= $qsCommon ?>" class="tab <?= $viewMode==='org'?'active':'' ?>">
+    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+    Organograma
+  </a>
+  <a href="index.php?view=lista&<?= $qsCommon ?>" class="tab <?= $viewMode==='lista'?'active':'' ?>">
+    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+    Lista
+  </a>
   <a href="export_xlsx.php?<?= $qsCommon ?><?= !empty($qTerm) ? '&q='.urlencode($qTerm) : '' ?>" class="tab tab-download" title="Baixar planilha">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
       <polyline points="7 10 12 15 17 10"></polyline>
       <line x1="12" y1="15" x2="12" y2="3"></line>
     </svg>
-    Baixar XLSX
+    Exportar
   </a>
-  <a href="logout.php" class="tab tab-logout" title="Sair">Sair</a>
+  <a href="logout.php" class="tab tab-logout" title="Sair">
+    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+    Sair
+  </a>
+  
+  <div style="width: 1px; height: 24px; background: var(--stroke); margin: 0 4px;"></div>
+  
+  <button id="themeToggleBtn" class="tab" title="Alternar Tema" style="padding: 8px; border-radius: 50%;">
+      <svg id="themeIcon" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+  </button>
 </div>
+
+<script>
+  (function(){
+    const btn = document.getElementById('themeToggleBtn');
+    const icon = document.getElementById('themeIcon');
+    const root = document.documentElement;
+    
+    function updateIcon(t) {
+        if(t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>';
+        } else {
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>';
+        }
+    }
+    
+    let currentTheme = localStorage.getItem('theme') || 'system';
+    updateIcon(currentTheme);
+    
+    btn.addEventListener('click', () => {
+        const isDark = root.getAttribute('data-theme') === 'dark' || 
+                      (root.getAttribute('data-theme')!== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        
+        const newTheme = isDark ? 'light' : 'dark';
+        root.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateIcon(newTheme);
+    });
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if((localStorage.getItem('theme') || 'system') === 'system') {
+            updateIcon('system');
+        }
+    });
+
+  })();
+</script>
+
 <style>
-  .tab{ display:inline-flex; align-items:center; padding:8px 12px; border-radius:999px; border:1px solid rgba(15,23,42,.12); background:#fff; color:#0f172a; font-weight:700; text-decoration:none; box-shadow:0 6px 16px rgba(17,24,39,.12); }
-  .tab.active{ background:#0f172a; color:#fff; border-color:#0f172a; }
+  .tab{ display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border-radius:999px; border:1px solid var(--card-border); background:var(--card-bg); color:var(--text-main); font-weight:600; font-size:0.9rem; text-decoration:none; box-shadow:0 4px 12px rgba(0,0,0,.08); transition: all 0.2s; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); cursor: pointer; }
+  .tab:hover{ transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,0,0,.15); }
+  .tab.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
   .tab-logout{ background:#ef4444; color:#fff; border-color:#ef4444; }
-  .tab-logout:hover{ filter: brightness(1.05); }
-  .tab-download{ background:#0ea5e9; color:#fff; border-color:#0ea5e9; }
-  .tab-download:hover{ filter: brightness(1.05); }
+  .tab-logout:hover{ filter: brightness(1.1); background:#ef4444; color:#fff; }
+  .tab-download{ background:#10b981; color:#fff; border-color:#10b981; }
+  .tab-download:hover{ filter: brightness(1.1); background:#10b981; color:#fff; }
   .listWrap{ padding:80px 18px calc(18px + var(--footer-h)); }
   .listWrap .container-xl{ max-width: 100%; }
   .listWrap .table{ width:100%; table-layout: fixed; }
@@ -380,50 +627,64 @@ $qsCommon = 'modo=' . urlencode($modoNav) . '&zoom=' . urlencode((string)$zoomPa
   .listWrap .table .text-muted{ white-space: nowrap; overflow:hidden; text-overflow: ellipsis; max-width:100%; display:block; font-size:.82rem; }
   .listWrap .table td a{ display:inline-block; white-space: nowrap; overflow:hidden; text-overflow: ellipsis; max-width:100%; }
 
-  /* Rodapé do site */
-  body{ padding-bottom: var(--footer-h); }
-  .site-footer{ padding:16px 18px; text-align:center; color:#64748b; font-size:13px; border-top:1px solid rgba(15,23,42,.08); background:#f8fafc; position:fixed; left:0; right:0; bottom:0; z-index:50; }
-  @media (prefers-color-scheme: dark){ .site-footer{ background:#0b1220; color:#cbd5e1; border-top-color: rgba(203,213,225,.18);} }
+  /* Rodapé do site e Body */
+  body{ padding-bottom: 0px; }
+
+  /* Painel de Navegação Lateral */
+  #navPanel form {
+    background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px;
+    padding: 16px; box-shadow: var(--card-shadow); font-family: inherit; color: var(--text-main);
+    min-width: 260px; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  }
+  #navHeader { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px; cursor:move; font-weight:800; color: var(--text-main); }
+  #navHeader button { border:none; background:transparent; font-size:18px; cursor:pointer; color: var(--text-main); }
+  .nav-group-title { font-weight:700; margin:12px 0 8px; font-size: 0.95rem; color: var(--text-main); }
+  .nav-label-text { font-size:.9rem; color: var(--card-sub); font-weight: 500;}
+  .nav-checkbox-list { display:flex; flex-direction:column; gap:8px; font-size:.92rem; color: var(--card-text); }
+  .nav-checkbox-list label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
 
   /* Botão de toggle do painel (minimizado) */
   .navToggleWrap{ position:fixed; right:16px; top:16px; z-index:61; display:inline-flex; align-items:center; gap:8px; }
-  #navToggle{ position:relative; width:46px; height:46px; border-radius:12px; border:1px solid rgba(15,23,42,.18); background:#0ea5e9; color:#fff; box-shadow:0 10px 24px rgba(14,165,233,.35); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
+  #navToggle{ position:relative; width:46px; height:46px; border-radius:12px; border:1px solid var(--accent); background:var(--accent); color:#fff; box-shadow:0 10px 24px rgba(14,165,233,.35); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
   #navToggle svg{ width:24px; height:24px; display:block; }
   #navToggle.attn{ animation:pulseGlow 2s ease-in-out infinite; }
   .navToggleWrap.jump{ animation:jump 0.9s ease; }
-  #navToggleLabel{ background:#0ea5e9; color:#fff; font-weight:600; padding:6px 10px; border-radius:10px; border:1px solid rgba(15,23,42,.18); box-shadow:0 10px 24px rgba(14,165,233,.25); }
+  #navToggleLabel{ background:var(--accent); color:#fff; font-weight:600; padding:6px 10px; border-radius:10px; border:1px solid rgba(15,23,42,.18); box-shadow:0 10px 24px rgba(14,165,233,.25); cursor: pointer; }
   #navToggleLabel.attn{ animation:pulseGlow 2s ease-in-out infinite; }
   @keyframes pulseGlow{ 0%{ box-shadow:0 0 0 0 rgba(14,165,233,.6); } 50%{ box-shadow:0 0 0 12px rgba(14,165,233,.0); } 100%{ box-shadow:0 0 0 0 rgba(14,165,233,.0); } }
   @keyframes jump{ 0%{ transform:translateY(0) } 20%{ transform:translateY(-8px) } 40%{ transform:translateY(0) } 60%{ transform:translateY(-4px) } 80%{ transform:translateY(0) } 100%{ transform:translateY(0) } }
 </style>
+</head>
+<body>
+  <!-- Ambient Background -->
+  <div class="ambient-orb orb-1"></div>
+  <div class="ambient-orb orb-2"></div>
 <?php if ($viewMode !== 'lista'): ?>
 <!-- Painel de navegação (canto direito) -->
 <div id="navToggleWrap" class="navToggleWrap" aria-label="Botão Navegação">
   <button id="navToggle" title="Mostrar painel" aria-label="Mostrar painel">
     <!-- Ícone de paralelepípedo (cubóide) -->
     <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <polygon points="4,8 14,5 20,8 10,11" fill="#38bdf8" opacity="0.95"></polygon>
-      <polygon points="4,8 4,18 10,21 10,11" fill="#0284c7"></polygon>
-      <polygon points="10,11 20,8 20,18 10,21" fill="#0ea5e9"></polygon>
+      <polygon points="4,8 14,5 20,8 10,11" fill="#fff" opacity="0.95"></polygon>
+      <polygon points="4,8 4,18 10,21 10,11" fill="#e0f2fe"></polygon>
+      <polygon points="10,11 20,8 20,18 10,21" fill="#bae6fd"></polygon>
     </svg>
   </button>
   <div id="navToggleLabel">Navegação</div>
 </div>
 <div id="navPanel" style="position:fixed; right:16px; top:16px; z-index:60;">
-  <form id="navForm" method="get" action="index.php" style="
-    background:rgba(255,255,255,.92); border:1px solid rgba(15,23,42,.1); border-radius:12px; padding:12px; box-shadow:0 10px 30px rgba(17,24,39,.18);
-    font-family:inherit; color:#0f172a; min-width:240px">
-    <div id="navHeader" style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; cursor:move;">
-      <div style="font-weight:800;">Navegação</div>
-      <button type="button" id="hidePanelBtn" title="Ocultar painel" style="border:none; background:transparent; font-size:18px; cursor:pointer">✖️</button>
+  <form id="navForm" method="get" action="index.php">
+    <div id="navHeader">
+      <div>Navegação</div>
+      <button type="button" id="hidePanelBtn" title="Ocultar painel">✕</button>
     </div>
-    <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-      <label style="font-size:.9rem; color:#475569;">Zoom</label>
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+      <label class="nav-label-text">Zoom</label>
       <input type="range" id="zoomRange" name="zoom" min="0.6" max="1.6" step="0.05" value="<?= htmlspecialchars((string)max(0.6,min(1.6,$zoomParam))) ?>" style="flex:1">
-      <span id="zoomLabel" style="width:40px; text-align:right; font-size:.85rem; color:#475569">1.00×</span>
+      <span id="zoomLabel" class="nav-label-text" style="width:40px; text-align:right;">1.00×</span>
     </div>
-    <div style="font-weight:700; margin:8px 0 6px;">Empresas</div>
-    <div style="display:flex; flex-direction:column; gap:6px; font-size:.92rem;">
+    <div class="nav-group-title">Empresas</div>
+    <div class="nav-checkbox-list">
       <?php
         $sel = array_map('strtolower', $selectedEmpresas);
         $isTodos = in_array('todos', $sel) || empty($sel);
@@ -433,10 +694,10 @@ $qsCommon = 'modo=' . urlencode($modoNav) . '&zoom=' . urlencode((string)$zoomPa
       <?php foreach($opts as $op): $ck = $isTodos || in_array(strtolower($op), $sel); ?>
         <label><input type="checkbox" class="chkEmpresa" name="empresas[]" value="<?= e($op) ?>" <?= $ck ? 'checked' : '' ?>> <?= e($op) ?></label>
       <?php endforeach; ?>
-      <label style="opacity:.7"><input type="checkbox" checked disabled> Grupo Barão (sempre visível)</label>
+      <label style="opacity:.6"><input type="checkbox" checked disabled> Grupo Barão (sempre fixa)</label>
     </div>
-    <div style="font-weight:700; margin:10px 0 6px;">Modo de expansão</div>
-    <div style="display:flex; flex-direction:column; gap:6px; font-size:.92rem;">
+    <div class="nav-group-title">Modo de expansão</div>
+    <div class="nav-checkbox-list">
       <label><input type="radio" name="modo" value="foco" <?= $modoNav==='foco'?'checked':'' ?>> Expandir Partes</label>
       <label><input type="radio" name="modo" value="livre" <?= $modoNav==='foco'?'':'checked' ?>> Expandir Tudo</label>
     </div>
@@ -598,6 +859,25 @@ $qsCommon = 'modo=' . urlencode($modoNav) . '&zoom=' . urlencode((string)$zoomPa
       </div>
     </div>
   </div>
+  
+  <!-- SPOTLIGHT OVERLAY -->
+  <div id="spotlight-overlay">
+    <div id="spotlight-modal">
+        <div class="spotlight-header">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input type="text" id="spotlight-input" placeholder="Buscar no Organograma..." autocomplete="off">
+        </div>
+        <div id="spotlight-results">
+            <!-- Resultados renderizados via JS -->
+        </div>
+        <div class="spotlight-footer">
+            <span>Use as setas <span class="spotlight-kbd">↑</span> <span class="spotlight-kbd">↓</span> para navegar, e <span class="spotlight-kbd">Enter</span> para ir até o colaborador.</span>
+            <span><span class="spotlight-kbd">Esc</span> para fechar</span>
+        </div>
+    </div>
+  </div>
 <?php endif; ?>
 
 <?php if ($viewMode === 'lista'): ?>
@@ -738,37 +1018,256 @@ $qsCommon = 'modo=' . urlencode($modoNav) . '&zoom=' . urlencode((string)$zoomPa
 </script>
 <?php endif; ?>
 
-<?php if ($viewMode !== 'lista'): ?>
 <!-- Cartão flutuante (fora do fluxo) -->
 <div id="hoverCard" role="dialog" aria-hidden="true">
   <div class="brandbar"></div>
   <div class="content">
     <div class="header">
       <div class="mini-avatar"><span class="inits">??</span></div>
-      <div>
-        <div class="nm">Nome</div>
-        <div class="sub">Cargo • Departamento</div>
+      <div class="nm">Nome</div>
+      <div class="sub">Cargo • Departamento</div>
+      
+      <div class="tabs-nav">
+        <button type="button" class="active" data-tab="tab-sobre">Sobre</button>
+        <button type="button" data-tab="tab-contato">Contato</button>
       </div>
     </div>
 
-    <div class="chips" id="chips"></div>
+    <!-- Aba Sobre (Chips + Observações Básicas) -->
+    <div id="tab-sobre" class="tab-pane active">
+        <div class="chips" id="chips"></div>
+        <div class="divider"></div>
+        <div class="grid">
+            <div class="icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6.75h1.5m-1.5 3h1.5m-1.5 3h1.5M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+                </svg>
+            </div>
+            <div class="grid-text">
+                <span class="lbl">Depto / Unidade</span>
+                <span id="valDepto" style="font-weight:600">—</span>
+            </div>
+            
+            <div class="icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                </svg>
+            </div>
+            <div class="grid-text">
+                <span class="lbl">Info Extra</span>
+                <span id="valObs">—</span>
+            </div>
+        </div>
+    </div>
 
-    <div class="actions" id="actions"></div>
-
-    <div class="divider"></div>
-
-    <div class="grid">
-      <div class="lbl">E-mail</div>       <div class="val" id="valEmail">—</div>
-      <div class="lbl">Telefone</div>     <div class="val" id="valFone">—</div>
-      <div class="lbl">Ramal</div>        <div class="val" id="valRamal">—</div>
-      <div class="lbl">Departamento</div> <div class="val" id="valDepto">—</div>
-      <div class="lbl">Obs.</div>         <div class="val" id="valObs">—</div>
+    <!-- Aba Contato (Grid Pessoal) -->
+    <div id="tab-contato" class="tab-pane">
+        <div class="actions-grid" id="actions-grid">
+            <!-- Renderizado via JS -->
+        </div>
+        <div class="divider"></div>
+        <div class="grid">
+            <div class="icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.896-1.596-5.496-4.196-7.092-7.092l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                </svg>
+            </div>
+            <div class="grid-text">
+                <span class="lbl">Telefone / Celular</span>
+                <span id="valFone" style="font-weight:600">—</span>
+            </div>
+            
+            <div class="icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9.75v-4.5m0 4.5h4.5m-4.5 0l6-6m-3 18c-8.284 0-15-6.716-15-15V4.5A2.25 2.25 0 014.5 2.25h1.372c.516 0 .966.351 1.091.852l1.106 4.423c.11.44-.055.902-.417 1.173l-1.293.97a17.14 17.14 0 007.092 7.092l.97-1.293c.271-.363.734-.527 1.173-.417l4.423 1.106c.5.125.852.575.852 1.091V19.5a2.25 2.25 0 01-2.25 2.25h-2.25z" />
+                </svg>
+            </div>
+            <div class="grid-text">
+                <span class="lbl">Ramal Interno</span>
+                <span id="valRamal" style="font-weight:600">—</span>
+            </div>
+        </div>
     </div>
   </div>
-</div>
-<?php endif; ?>
+<!-- Fim Cartão Flutuante -->
 
 <?php if ($viewMode !== 'lista'): ?>
+<script>
+(() => {
+  /* ===== SPOTLIGHT SEARCH (CTRL+K) ===== */
+  const spotlightOverlay = document.getElementById('spotlight-overlay');
+  const spotlightInput   = document.getElementById('spotlight-input');
+  const spotlightResults = document.getElementById('spotlight-results');
+  let selectedSpotlightIndex = -1;
+  let spotlightItems = []; // DOM elements dos resultados
+
+  // Coletar todos os dados dos colaboradores diretamente dos atributos data-* das tags <summary class="person">
+  let allColabs = [];
+  function populateSearchData() {
+      allColabs = [];
+      document.querySelectorAll('.org summary.person').forEach(sum => {
+          if(!sum.dataset.nome) return;
+          allColabs.push({
+              nome: sum.dataset.nome,
+              cargo: sum.dataset.cargo || '',
+              departamento: sum.dataset.departamento || '',
+              foto: sum.dataset.foto || '',
+              element: sum
+          });
+      });
+  }
+
+  function openSpotlight() {
+      populateSearchData();
+      spotlightOverlay.classList.add('active');
+      spotlightInput.value = '';
+      spotlightResults.innerHTML = '';
+      selectedSpotlightIndex = -1;
+      setTimeout(() => spotlightInput.focus(), 50);
+  }
+  function closeSpotlight() {
+      spotlightOverlay.classList.remove('active');
+      spotlightInput.blur();
+  }
+
+  // Atalhos de Teclado
+  document.addEventListener('keydown', (e) => {
+      // Ctrl+K ou Cmd+K
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+          e.preventDefault();
+          if (spotlightOverlay.classList.contains('active')) closeSpotlight();
+          else openSpotlight();
+      }
+      // Esc para fechar
+      if (e.key === 'Escape' && spotlightOverlay.classList.contains('active')) {
+          closeSpotlight();
+      }
+  });
+
+  spotlightOverlay.addEventListener('mousedown', (e) => {
+      if (e.target === spotlightOverlay) closeSpotlight();
+  });
+
+  // Buscador Fuzzy/Live Search
+  spotlightInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      spotlightResults.innerHTML = '';
+      spotlightItems = [];
+      selectedSpotlightIndex = -1;
+
+      if (q.length < 1) return;
+
+      const filtered = allColabs.filter(c => 
+          c.nome.toLowerCase().includes(q) || 
+          c.cargo.toLowerCase().includes(q) || 
+          c.departamento.toLowerCase().includes(q)
+      ).slice(0, 8); // Limita a 8 resultados
+
+      if (filtered.length === 0) {
+          spotlightResults.innerHTML = '<div style="padding:20px; text-align:center; color:#64748b;">Nenhum colaborador encontrado.</div>';
+          return;
+      }
+
+      filtered.forEach((c, idx) => {
+          const div = document.createElement('div');
+          div.className = 'spotlight-item';
+          
+          const inits = c.nome.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+          const avatarHtml = c.foto 
+              ? `<img src="${c.foto}" class="ava">` 
+              : `<div class="ava">${inits}</div>`;
+
+          div.innerHTML = `
+             ${avatarHtml}
+             <div class="info">
+                 <strong>${c.nome}</strong>
+                 <span>${c.cargo} ${c.departamento ? '• '+c.departamento : ''}</span>
+             </div>
+          `;
+          
+          div.addEventListener('mouseenter', () => activateItem(idx));
+          div.addEventListener('click', () => jumpToColab(c.element));
+
+          spotlightResults.appendChild(div);
+          spotlightItems.push(div);
+      });
+      // Ativa o primeiro por padrão
+      if(spotlightItems.length > 0) activateItem(0);
+  });
+
+  // Navegação no teclado das setas
+  spotlightInput.addEventListener('keydown', (e) => {
+      if (spotlightItems.length === 0) return;
+      if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          let next = selectedSpotlightIndex + 1;
+          if (next >= spotlightItems.length) next = 0;
+          activateItem(next);
+      } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          let prev = selectedSpotlightIndex - 1;
+          if (prev < 0) prev = spotlightItems.length - 1;
+          activateItem(prev);
+      } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (selectedSpotlightIndex >= 0 && selectedSpotlightIndex < spotlightItems.length) {
+              spotlightItems[selectedSpotlightIndex].click();
+          }
+      }
+  });
+
+  function activateItem(idx) {
+      spotlightItems.forEach(i => i.classList.remove('selected'));
+      selectedSpotlightIndex = idx;
+      if(spotlightItems[idx]) {
+          spotlightItems[idx].classList.add('selected');
+          spotlightItems[idx].scrollIntoView({ block: 'nearest' });
+      }
+  }
+
+  // Pulo 3D e expansão automática da árvore
+  function jumpToColab(element) {
+      closeSpotlight();
+      if(!element) return;
+      
+      // Expande todas as tags <details> pai desse nó, subindo a árvore
+      let parentDetails = element.closest('details');
+      while (parentDetails) {
+          parentDetails.open = true;
+          parentDetails = parentDetails.parentElement.closest('details');
+      }
+      
+      // Força um reflow imediato do layout SVG Wires antes de rolar
+      if(typeof redraw === 'function') redraw();
+
+      setTimeout(() => {
+          // Centraliza a visão do viewport em cima do card escolhido
+          const rect = element.getBoundingClientRect();
+          const wrap = document.querySelector('.wrap');
+          
+          // Animação de zoom de destaque
+          element.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          element.style.transform = 'scale(1.15)';
+          element.style.zIndex = '100';
+          
+          setTimeout(() => {
+              element.style.transform = '';
+              element.style.zIndex = '';
+          }, 800);
+
+          wrap.scrollTo({
+              left: wrap.scrollLeft + rect.left - window.innerWidth / 2 + rect.width / 2,
+              top: wrap.scrollTop + rect.top - window.innerHeight / 2 + rect.height / 2,
+              behavior: 'smooth'
+          });
+          
+          // Abre o hoverCard pra ele
+          showCardFor(element);
+      }, 50);
+  }
+
+})();
+</script>
 <script>
 (() => {
   const stage = document.getElementById('stage');
@@ -1032,7 +1531,7 @@ $qsCommon = 'modo=' . urlencode($modoNav) . '&zoom=' . urlencode((string)$zoomPa
     if(root) drawFor(root);
   }
 
-  org.addEventListener('toggle', redraw);
+  org.addEventListener('toggle', redraw, true);
   const ro = new ResizeObserver(redraw);
   ro.observe(stage);
   org.querySelectorAll('summary').forEach(el => ro.observe(el));
@@ -1100,15 +1599,16 @@ $qsCommon = 'modo=' . urlencode($modoNav) . '&zoom=' . urlencode((string)$zoomPa
       mini.appendChild(im);
     } else {
       const s = document.createElement('div');
-      s.className='inits'; s.style.fontSize='22px';
+      s.className='inits'; s.style.fontSize='28px';
       s.textContent = (d.nome||'??').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
       mini.appendChild(s);
-      mini.style.background = `hsl(${nameToHue((d.nome||'').toLowerCase())},55%,68%)`;
+      mini.style.border = `3px solid hsl(${nameToHue((d.nome||'').toLowerCase())},55%,68%)`;
+      mini.style.background = '#fefefe';
     }
 
-    // Título
+    // Título Central
     card.querySelector('.nm').textContent  = d.nome || '—';
-    card.querySelector('.sub').textContent = [d.cargo||'—', d.departamento||'—'].join(' • ');
+    card.querySelector('.sub').textContent = [d.cargo||'—'].join(' • ');
 
     // Chips
     const chips = card.querySelector('#chips'); chips.innerHTML = '';
@@ -1116,36 +1616,63 @@ $qsCommon = 'modo=' . urlencode($modoNav) . '&zoom=' . urlencode((string)$zoomPa
     if (d.tipo)         chips.append(childChip(d.tipo));
     if (d.admissao)     chips.append(childChip(formatDateBr(d.admissao),'📅'));
 
-    // Ações
-    const acts = card.querySelector('#actions'); acts.innerHTML = '';
-    if (d.email)   acts.append(actionBtn('mailto:'+d.email, '✉️', 'E-mail'));
-    if (d.telefone){
-      acts.append(whatsappBtn(waFromPhone(d.telefone)));
+    // Ações Premium (Grid de Botões)
+    const acts = card.querySelector('#actions-grid'); acts.innerHTML = '';
+    
+    if (d.email) {
+        acts.append(premiumBtn('mailto:'+d.email, `<svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>`, 'E-mail', 'btn-em'));
     }
-    if (d.teams)   acts.append(actionBtn(d.teams, '💬', 'Teams'));
+    if (d.telefone){
+      acts.append(premiumBtn(waFromPhone(d.telefone), `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.2 15.1c-.3.3-.9.8-1.6.9-.7.2-1.6.2-2.7-.3-1.2-.5-2.6-1.6-3.8-3-1.2-1.4-2-2.8-2.4-4-.4-1.2-.4-2.1-.2-2.8.2-.7.6-1.2.9-1.5.3-.3.6-.3.8-.3h.6c.2 0 .5.1.7.5l1 2c.1.3.1.5 0 .8l-.5.8c-.1.2-.1.4 0 .6.3.6.8 1.4 1.6 2.1.8.7 1.5 1.1 2.1 1.4.2.1.4.1.6 0l.9-.4c.3-.1.6 0 .8.1l1.8 1.1c.3.2.4.4.4.6 0 .2-.1.5-.3.7z"/></svg>`, 'WhatsApp', 'btn-wa'));
+    }
+    if (d.teams){
+        acts.append(premiumBtn(d.teams, `<svg viewBox="0 0 16 16" fill="currentColor"><path d="M9.186 4.797a2.42 2.42 0 1 0-2.86-2.448h1.178c.929 0 1.682.753 1.682 1.682zm-4.295 7.738h2.613c.929 0 1.682-.753 1.682-1.682V5.58h2.783a.7.7 0 0 1 .682.716v4.294a4.197 4.197 0 0 1-4.093 4.293c-1.618-.04-3-.99-3.667-2.35Zm10.737-9.372a1.674 1.674 0 1 1-3.349 0 1.674 1.674 0 0 1 3.349 0m-2.238 9.488-.12-.002a5.2 5.2 0 0 0 .381-2.07V6.306a1.7 1.7 0 0 0-.15-.725h1.792c.39 0 .707.317.707.707v3.765a2.6 2.6 0 0 1-2.598 2.598z"/><path d="M.682 3.349h6.822c.377 0 .682.305.682.682v6.822a.68.68 0 0 1-.682.682H.682A.68.68 0 0 1 0 10.853V4.03c0-.377.305-.682.682-.682Zm5.206 2.596v-.72h-3.59v.72h1.357V9.66h.87V5.945z"/></svg>`, 'Teams', 'btn-tm'));
+    }
 
-    // Detalhes
-    setVal('#valEmail', d.email);
+    // Grid Text
     setVal('#valFone',  d.telefone);
     setVal('#valRamal', d.ramal);
     setVal('#valDepto', d.departamento);
     setVal('#valObs',   d.obs);
 
-    // Posicionamento: calcula lado com mais espaço
-    placeCardNear(summary);
+    // Reseta abas para a primeira
+    card.querySelectorAll('.tabs-nav button').forEach(b => b.classList.remove('active'));
+    card.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    card.querySelector('button[data-tab="tab-sobre"]').classList.add('active');
+    card.querySelector('#tab-sobre').classList.add('active');
 
+    // Posicionamento: calcula lado com mais espaço e exibe
+    placeCardNear(summary);
     card.style.display = 'block';
+    // Timeout para transição suave de CSS (.show tem transição)
+    setTimeout(() => card.classList.add('show'), 10);
   }
 
+  // Lógica das Abas do Modal
+  card.querySelectorAll('.tabs-nav button').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+          // Tabs nav
+          card.querySelectorAll('.tabs-nav button').forEach(b => b.classList.remove('active'));
+          e.currentTarget.classList.add('active');
+          // Panels
+          card.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+          const target = e.currentTarget.getAttribute('data-tab');
+          card.querySelector('#'+target).classList.add('active');
+      });
+  });
+
   function childChip(text, icon){
-    const s = document.createElement('span'); s.className='chip';
+    const s = document.createElement('span'); s.className='chip-tag';
     if (icon){ s.textContent = icon+' '+text; } else { s.textContent = text; }
     return s;
   }
-  function actionBtn(href, icon, label, extraClass){
-    const a = document.createElement('a'); a.className='btn-mini' + (extraClass?(' '+extraClass):''); a.href = href; a.target = (href.startsWith('http')?'_blank':'_self'); a.rel='noopener';
-    if (icon){ const i=document.createElement('span'); i.className='ico'; i.textContent=icon; a.appendChild(i); }
-    a.appendChild(document.createTextNode(' '+label));
+  function premiumBtn(href, svgContent, label, extraClass){
+    const a = document.createElement('a'); a.className='btn-premium' + (extraClass?(' '+extraClass):''); 
+    a.href = href; a.target = (href.startsWith('http')?'_blank':'_self'); a.rel='noopener';
+    const icoWrap = document.createElement('div'); icoWrap.className = 'ico-wrapper';
+    icoWrap.innerHTML = svgContent;
+    a.appendChild(icoWrap);
+    a.appendChild(document.createTextNode(label));
     return a;
   }
   function setVal(sel, val){ card.querySelector(sel).textContent = val && val.trim() !== '' ? val : '—'; }
@@ -1363,6 +1890,5 @@ $qsCommon = 'modo=' . urlencode($modoNav) . '&zoom=' . urlencode((string)$zoomPa
 })();
 </script>
 <?php endif; ?>
-<footer class="site-footer">Desenvolvido internamente • Equipe de TI Grupo Barão • 2025</footer>
 </body>
 </html>

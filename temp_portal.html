@@ -1,0 +1,1601 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>..::Grupo Barão::..</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    <!-- Apenas Fontes e Ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    
+    <!-- CSS Customizado (Sem dependência do Bootstrap/Tabler CSS) -->
+    <style>
+        :root {
+            /* Palette Light */
+            --bg-body: #f8fafc;
+            --bg-container: rgba(255, 255, 255, 0.85);
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --bg-card-hover: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border-color: rgba(226, 232, 240, 0.8);
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            /* Shadows & Effects */
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1);
+            --shadow-glow: 0 0 20px rgba(var(--card-rgb, 100,100,100), 0.05);
+            
+            --header-bg: rgba(255, 255, 255, 0.85);
+            --header-border: #e2e8f0;
+            --modal-overlay: rgba(15, 23, 42, 0.6);
+            
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            
+            --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-bounce: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        [data-theme="dark"] {
+            /* Palette Dark */
+            --bg-body: #0b0f19;
+            --bg-container: rgba(15, 23, 42, 0.65);
+            --bg-card: #111827;
+            --bg-card-hover: #1f2937;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #1e293b;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.5);
+            --shadow-glow: 0 0 20px rgba(var(--card-rgb, 100,100,100), 0.15);
+            
+            --header-bg: rgba(11, 15, 25, 0.85);
+            --header-border: #1e293b;
+            --modal-overlay: rgba(0, 0, 0, 0.8);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            transition: background-color 0.4s ease, color 0.4s ease;
+            position: relative;
+        }
+        
+        /* Ambient Background Glow */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -200px;
+            left: -200px;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(32,107,196,0.15) 0%, rgba(32,107,196,0) 70%);
+            z-index: -1;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -200px;
+            right: -200px;
+            width: 1000px;
+            height: 1000px;
+            background: radial-gradient(circle, rgba(111,66,193,0.15) 0%, rgba(111,66,193,0) 70%);
+            z-index: -1;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        [data-theme="dark"] body::before {
+            background: radial-gradient(circle, rgba(32,107,196,0.25) 0%, rgba(32,107,196,0) 70%);
+        }
+        [data-theme="dark"] body::after {
+            background: radial-gradient(circle, rgba(111,66,193,0.25) 0%, rgba(111,66,193,0) 70%);
+        }
+            pointer-events: none;
+            transition: var(--transition-smooth);
+        }
+        body::before {
+            top: -200px;
+            left: -200px;
+            background: radial-gradient(circle, rgba(32,107,196,0.15) 0%, rgba(32,107,196,0) 70%);
+        }
+        body::after {
+            bottom: -200px;
+            right: -200px;
+            background: radial-gradient(circle, rgba(111,66,193,0.15) 0%, rgba(111,66,193,0) 70%);
+        }
+        [data-theme="dark"] body::before {
+            background: radial-gradient(circle, rgba(32,107,196,0.25) 0%, rgba(32,107,196,0) 70%);
+        }
+        [data-theme="dark"] body::after {
+            background: radial-gradient(circle, rgba(111,66,193,0.25) 0%, rgba(111,66,193,0) 70%);
+        }
+
+        /* Utility Classes */
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .hide { display: none !important; }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Layout & Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.25rem 0;
+            z-index: 100;
+            background: var(--header-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--header-border);
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-sm);
+        }
+        header .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            height: 44px;
+            transition: var(--transition-smooth);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+        [data-theme="dark"] .logo {
+            filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+        
+        /* Theme Toggle Button */
+        .btn-icon {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%; /* Modern circle */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: var(--transition-bounce);
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .btn-icon:hover {
+            transform: translateY(-2px) scale(1.1) rotate(15deg);
+            box-shadow: var(--shadow-md), 0 0 15px rgba(255, 255, 255, 0.2);
+            border-color: var(--text-primary);
+        }
+        .btn-icon:active {
+            transform: scale(0.95);
+        }
+
+        /* Main Content Wrapper */
+        .main-wrapper {
+            margin-top: 100px;
+            margin-bottom: 4rem;
+            min-height: calc(100vh - 200px);
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+        }
+        
+        .hero {
+            width: 100%;
+            max-width: 1200px;
+            text-align: left;
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .hero-title {
+            font-size: 1.75rem;
+            margin-bottom: 0;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+        .hero-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 0;
+            font-weight: 400;
+        }
+
+        /* Hero Animation */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Dashboard Grid */
+        .grid-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: float 6s ease-in-out infinite; /* Subtle float for the whole grid area */
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr); /* Force exactly 6 columns */
+            gap: 1rem;
+            margin-bottom: 4rem;
+            justify-content: center;
+        }
+        
+        /* Dashboard Card - Ultra Modern Glassmorphism */
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.15rem;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Left align content for a sleeker look */
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-bounce);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-primary);
+            min-height: 110px;
+            z-index: 1;
+        }
+        
+        /* Animated Gradient Border Effect */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 16px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--card-color), transparent 60%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.3;
+            transition: var(--transition-smooth);
+            pointer-events: none;
+            z-index: 2;
+        }
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-lg), var(--shadow-glow);
+            border-color: transparent; /* Let the animated border shine */
+            background: var(--bg-card-hover);
+            z-index: 10;
+        }
+        .card:hover::before {
+            opacity: 1;
+            background: linear-gradient(135deg, var(--card-color), rgba(var(--card-rgb), 0.5), transparent);
+        }
+        
+        .card-icon-wrapper {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem; 
+            font-size: 1.25rem;
+            background: rgba(var(--card-rgb, 100,100,100), 0.1);
+            color: var(--card-color, #206bc4);
+            transition: var(--transition-bounce);
+            position: relative;
+        }
+        .card:hover .card-icon-wrapper {
+            transform: scale(1.1);
+            background: var(--card-color);
+            color: white;
+            box-shadow: 0 4px 8px rgba(var(--card-rgb, 100,100,100), 0.25);
+        }
+
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            min-width: 0; 
+        }
+        .card h3 {
+            font-size: 1.05rem;
+            margin-bottom: 0.25rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .card p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.2;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .section-header {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0 auto 1.5rem auto;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+        .section-title {
+            font-size: 1.4rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .section-title i {
+            color: #206bc4;
+        }
+
+        .news-grid {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* Force 4 columns on desktop */
+            gap: 1.5rem;
+        }
+        .news-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-bounce);
+            height: 100%;
+            position: relative;
+        }
+        .news-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(32,107,196,0.3);
+        }
+        .news-image {
+            width: 100%;
+            height: 150px; 
+            object-fit: cover;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--bg-body);
+            transition: transform 0.5s ease;
+        }
+        .news-card:hover .news-image {
+            transform: scale(1.05); /* Slight image zoom on hover */
+        }
+        .news-image-wrapper {
+            overflow: hidden;
+            width: 100%;
+            height: 150px;
+        }
+        .news-body {
+            padding: 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .news-category {
+            display: inline-flex;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.2rem 0.6rem;
+            border-radius: 99px;
+            margin-bottom: 0.75rem;
+            align-self: flex-start;
+        }
+        .cat-portal { background: rgba(32,107,196,0.1); color: #206bc4; }
+        [data-theme="dark"] .cat-portal { background: rgba(32,107,196,0.2); color: #60a5fa; }
+        .cat-maxtrade { background: rgba(111,66,193,0.1); color: #6f42c1; }
+        [data-theme="dark"] .cat-maxtrade { background: rgba(111,66,193,0.2); color: #c084fc; }
+        
+        .news-body h4 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+        .news-body p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+        .news-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            padding-top: 0.75rem;
+        }
+        .news-date {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .btn-link {
+            font-family: var(--font-display);
+            font-weight: 600;
+            color: #206bc4;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: var(--transition-smooth);
+            font-size: 0.85rem;
+        }
+        [data-theme="dark"] .btn-link { color: #60a5fa; }
+        .btn-link:hover {
+            gap: 0.5rem;
+            color: #1a5490;
+        }
+        [data-theme="dark"] .btn-link:hover { color: #93c5fd; }
+
+        /* Custom Modal Dialogs */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-overlay);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            padding: 1rem;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: var(--bg-card);
+            width: 100%;
+            max-width: 900px;
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg), 0 0 0 1px var(--border-color);
+            transform: scale(0.95) translateY(20px);
+            opacity: 0;
+            transition: var(--transition-bounce);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+        .modal-header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+        }
+        .modal-header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.15;
+            z-index: 0;
+        }
+        [data-theme="dark"] .modal-header-bg { opacity: 0.25; }
+        .modal-title {
+            z-index: 1;
+            margin: 0;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+        }
+        .modal-title i, .modal-title svg {
+            color: inherit;
+        }
+        .modal-desc {
+            z-index: 1;
+            font-size: 0.95rem;
+            opacity: 0.9;
+            font-family: var(--font-body);
+            font-weight: 400;
+            margin-left: 0.5rem;
+            border-left: 1px solid currentColor;
+            padding-left: 0.5rem;
+        }
+        .modal-close {
+            z-index: 1;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: inherit;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-size: 1.25rem;
+            backdrop-filter: blur(4px);
+        }
+        .modal-close:hover {
+            background: rgba(255,255,255,0.4);
+            transform: scale(1.1);
+        }
+        .modal-body {
+            padding: 2rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        /* Submenu Cards Flex Layout (to support legacy 'tamanho' classes) */
+        .submenu-grid {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -0.5rem;
+        }
+        .submenu-grid > [class*="col-"] {
+            padding: 0.5rem;
+            box-sizing: border-box;
+        }
+        .col-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-12 { width: 100% !important; }
+        .col-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xl-6 { width: 50% !important; }
+        .col-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xl-4 { width: 33.333333% !important; }
+        .col-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xl-3 { width: 25% !important; }
+        .col-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xl-2 { width: 16.666667% !important; }
+        .submenu-card {
+            background: var(--bg-body);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem 0.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: var(--transition-bounce);
+            cursor: pointer;
+            height: 100%;
+            width: 100%;
+        }
+        .submenu-card:hover {
+            border-color: transparent;
+            background: var(--bg-card);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: var(--shadow-lg), 0 0 20px rgba(var(--card-rgb, 100,100,100), 0.2);
+            z-index: 2;
+        }
+        .submenu-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 16px;
+            padding: 2px;
+            background: linear-gradient(135deg, var(--card-color), transparent 60%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: var(--transition-smooth);
+            pointer-events: none;
+        }
+        .submenu-card:hover::before {
+            opacity: 1;
+        }
+        .submenu-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(var(--card-rgb, 100,100,100), 0.1);
+            color: var(--card-color, #206bc4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            transition: var(--transition-smooth);
+        }
+        .submenu-card:hover .submenu-icon {
+            background: var(--card-color, #206bc4);
+            color: white;
+            transform: scale(1.1);
+        }
+        .submenu-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+        .submenu-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+
+        /* Responsive Settings */
+        @media (max-width: 1200px) {
+            .grid, .news-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (max-width: 900px) {
+            .grid, .news-grid { grid-template-columns: repeat(3, 1fr); }
+            .hero { flex-direction: column; align-items: flex-start; gap: 0.25rem; margin-bottom: 1.5rem; }
+            .submenu-grid > .col-md-6 { width: 50% !important; }
+            .submenu-grid > .col-md-4 { width: 33.333333% !important; }
+        }
+        @media (max-width: 600px) {
+            .grid, .news-grid { grid-template-columns: repeat(2, 1fr); }
+            .card-icon-wrapper { width: 32px; height: 32px; font-size: 1.2rem; }
+            .card h3 { font-size: 0.85rem; }
+            .card p { font-size: 0.7rem; }
+            .submenu-grid > [class*="col-"] { width: 100% !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <a href="index_v2026.php">
+                <img src="assets/img/avatars/logo-cores.png" alt="Grupo Barão" class="logo">
+            </a>
+            <button class="btn-icon" id="themeToggle" title="Alternar Tema">
+                <i class="ti ti-sun" id="themeIcon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-wrapper container">
+        
+        <div class="hero">
+            <h1 class="hero-title">Portal do Colaborador</h1>
+            <p class="hero-subtitle">• Ferramentas corporativas do Grupo Barão</p>
+        </div>
+
+        <!-- System Links Grid -->
+        <div class="grid-container">
+            <div class="grid">
+                                    
+                                    <div class="card" 
+                         style="--card-color: #2590cf; --card-rgb: 37, 144, 207;"
+                         onclick="openModal('modal-1')">
+                        <div class="card-icon-wrapper">
+                            <i class="ti ti-device-desktop"></i>                        </div>
+                        <div class="card-content">
+                            <h3>MaxTrade</h3>
+                            <p>Barão Distribuidor</p>
+                        </div>
+                    </div>
+                                
+                                    
+                                    <a href="http://ti.grupobarao.com.br/glpi" target="_blank" class="card"
+                       style="--card-color: black; --card-rgb: 187, 170, 204;">
+                        <div class="card-icon-wrapper">
+                            <i class="ti ti-message"></i>                        </div>
+                        <div class="card-content">
+                            <h3>Chamado TI</h3>
+                            <p>Grupo Barão</p>
+                        </div>
+                    </a>
+                                
+                                    
+                                    <a href="docs/PSI.pdf" target="_blank" class="card"
+                       style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                        <div class="card-icon-wrapper">
+                            <i class="ti ti-shield"></i>                        </div>
+                        <div class="card-content">
+                            <h3>Política </h3>
+                            <p>de Segurança</p>
+                        </div>
+                    </a>
+                                
+                                    
+                                    <a href="https://www.ti.grupobarao.com.br/portal/blog-maxtrade.php" target="_self" class="card"
+                       style="--card-color: black; --card-rgb: 187, 170, 204;">
+                        <div class="card-icon-wrapper">
+                            <i class="ti ti-refresh"></i>                        </div>
+                        <div class="card-content">
+                            <h3>Atualizações</h3>
+                            <p>Maxtrade</p>
+                        </div>
+                    </a>
+                                
+                                    
+                                    <div class="card" 
+                         style="--card-color: rgb(96,54,119); --card-rgb: 32, 107, 196;"
+                         onclick="openModal('modal-2')">
+                        <div class="card-icon-wrapper">
+                            <i class="ti ti-device-desktop"></i>                        </div>
+                        <div class="card-content">
+                            <h3>MaxTrade</h3>
+                            <p>ToyMania</p>
+                        </div>
+                    </div>
+                                
+                                    
+                                    <div class="card" 
+                         style="--card-color: black; --card-rgb: 187, 170, 204;"
+                         onclick="openModal('modal-3')">
+                        <div class="card-icon-wrapper">
+                            <i class="ti ti-truck"></i>                        </div>
+                        <div class="card-content">
+                            <h3>Sistemas</h3>
+                            <p>da Logística</p>
+                        </div>
+                    </div>
+                                
+                                    
+                                    <div class="card" 
+                         style="--card-color: #2590cf; --card-rgb: 37, 144, 207;"
+                         onclick="openModal('modal-4')">
+                        <div class="card-icon-wrapper">
+                            <i class="ti ti-device-laptop"></i>                        </div>
+                        <div class="card-content">
+                            <h3>Sistemas</h3>
+                            <p>do Representante</p>
+                        </div>
+                    </div>
+                                
+                                    
+                                    <div class="card" 
+                         style="--card-color: #2590cf; --card-rgb: 37, 144, 207;"
+                         onclick="openModal('modal-5')">
+                        <div class="card-icon-wrapper">
+                            <i class="ti ti-users"></i>                        </div>
+                        <div class="card-content">
+                            <h3>RH</h3>
+                            <p>Grupo Barão</p>
+                        </div>
+                    </div>
+                                
+                                    
+                                    <div class="card" 
+                         style="--card-color: #2590cf; --card-rgb: 37, 144, 207;"
+                         onclick="openModal('modal-6')">
+                        <div class="card-icon-wrapper">
+                            <i class="ti ti-settings"></i>                        </div>
+                        <div class="card-content">
+                            <h3>TI Suporte</h3>
+                            <p>Grupo Barão</p>
+                        </div>
+                    </div>
+                                
+                                    
+                                    <a href="http://ti.grupobarao.com.br/predial/" target="_blank" class="card"
+                       style="--card-color: #ffcb18; --card-rgb: 255, 203, 24;">
+                        <div class="card-icon-wrapper">
+                            <i class="ti ti-tool"></i>                        </div>
+                        <div class="card-content">
+                            <h3>Predial</h3>
+                            <p>Grupo Barão</p>
+                        </div>
+                    </a>
+                                
+                                    
+                                    <a href="http://ti.grupobarao.com.br/portal/docs/politica_do_contas_a_pagar_GB.pdf" target="_blank" class="card"
+                       style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                        <div class="card-icon-wrapper">
+                            <i class="ti ti-credit-card"></i>                        </div>
+                        <div class="card-content">
+                            <h3>Politica do</h3>
+                            <p>Contas a Pagar</p>
+                        </div>
+                    </a>
+                                
+                                    
+                                    <a href="http://ti.grupobarao.com.br/portal/download_lideranca.php" target="_blank" class="card"
+                       style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                        <div class="card-icon-wrapper">
+                            <i class="ti ti-user"></i>                        </div>
+                        <div class="card-content">
+                            <h3>Portal da</h3>
+                            <p>Liderança</p>
+                        </div>
+                    </a>
+                                
+                            </div>
+        </div>
+
+        <!-- News Section -->
+        <div class="section-header">
+            <h2 class="section-title"><i class="ti ti-news"></i> Updates & Notícias</h2>
+        </div>
+        
+        <div class="news-grid">
+            <!-- Portal News -->
+                                                <div class="news-card">
+                        <div class="news-image-wrapper">
+                                                            <img src="uploads/ChatGPT Image 26 de nov. de 2025, 14_07_57.png" class="news-image" alt="Notícia">
+                                                    </div>
+                        
+                        <div class="news-body">
+                            <span class="news-category cat-portal">Blog do TI</span>
+                            <h4>Vírus de Celular: Eles Realmente Existem? Como Funcionam e Como se Proteger</h4>
+                            <p>Nos &uacute;ltimos anos, os smartphones se tornaram a principal porta de entrada para a vida digital &mdash; trabalho...</p>
+                            
+                            <div class="news-footer">
+                                <span class="news-date"><i class="ti ti-calendar"></i> 27/11/2025</span>
+                                <a href="blog_post.php?id=74&from=index" target="_blank" class="btn-link">Ler mais <i class="ti ti-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                                    <div class="news-card">
+                        <div class="news-image-wrapper">
+                                                            <img src="uploads/OIG2.Acu793A0Kd78gSWWGwBy.jpg" class="news-image" alt="Notícia">
+                                                    </div>
+                        
+                        <div class="news-body">
+                            <span class="news-category cat-portal">Blog do TI</span>
+                            <h4>A Importância de Prevenir Vírus Digitais: Como Proteger o Ambiente Corporativo</h4>
+                            <p>
+
+
+
+Introdu&ccedil;&atilde;o
+No mundo corporativo moderno, o fluxo de informa&ccedil;&otilde;es digitais &eacute...</p>
+                            
+                            <div class="news-footer">
+                                <span class="news-date"><i class="ti ti-calendar"></i> 07/03/2025</span>
+                                <a href="blog_post.php?id=21&from=index" target="_blank" class="btn-link">Ler mais <i class="ti ti-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                                        
+            <!-- Maxtrade News -->
+                                                <div class="news-card">
+                        <div class="news-image-wrapper">
+                                                            <img src="uploads/_4fa11fdd-7c27-4b21-80dd-27fff0f62e0e.jpeg" class="news-image" alt="Notícia">
+                                                    </div>
+                        
+                        <div class="news-body">
+                            <span class="news-category cat-maxtrade">Maxtrade</span>
+                            <h4>Nova Consulta de Estoque de itens no CD </h4>
+                            <p>🚀&nbsp;Transforma&ccedil;&atilde;o Digital no Estoque: Efici&ecirc;ncia e Organiza&ccedil;&atilde;o com Maxtrade no ...</p>
+                            
+                            <div class="news-footer">
+                                <span class="news-date"><i class="ti ti-calendar"></i> 29/05/2025</span>
+                                <a href="blog_post.php?id=61&from=index" target="_blank" class="btn-link">Ler mais <i class="ti ti-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                                    <div class="news-card">
+                        <div class="news-image-wrapper">
+                                                            <img src="uploads/img_682780e2aec4d6.96593382.jpeg" class="news-image" alt="Notícia">
+                                                    </div>
+                        
+                        <div class="news-body">
+                            <span class="news-category cat-maxtrade">Maxtrade</span>
+                            <h4>Guia Rápido - Como funciona o cálculo de cubagem na Toymania</h4>
+                            <p>Desvendando a Cubagem na Toymania
+A cubagem &eacute; essencial em uma opera&ccedil;&atilde;o logi&iacute;stica. Por ...</p>
+                            
+                            <div class="news-footer">
+                                <span class="news-date"><i class="ti ti-calendar"></i> 16/05/2025</span>
+                                <a href="blog_post.php?id=58&from=index" target="_blank" class="btn-link">Ler mais <i class="ti ti-arrow-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                                    </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2026 Grupo Barão • Sistema Integrado Corporativo</p>
+        </div>
+    </footer>
+
+    <!-- Modals Rendering -->
+        <div class="modal-overlay" id="modal-1">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #2590cf; color: #ffffff;">
+                <div class="modal-header-bg" style="background-color: #2590cf;"></div>
+                <h2 class="modal-title">
+                    <i class="ti ti-device-desktop"></i>                    MaxTrade                                            <span class="modal-desc">Barão Distribuidor</span>
+                                    </h2>
+                <button class="modal-close" onclick="closeModal('modal-1')">
+                    <i class="ti ti-x"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="submenu-grid">
+                                            <div class="col-lg-12 col-xl-12">
+                                                            <a href="http://179.131.12.83/maxbarao_teste/home1.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: orangered; --card-rgb: 32, 107, 196;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>MaxTrade Teste</h4>
+                                    <p>179.131.12.83</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-3 col-xl-3">
+                                                            <a href="http://179.131.12.83/maxtrade_05_2017/home1.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-settings"></i>                                    </div>
+                                    <h4>Link 1</h4>
+                                    <p>Servidor: 179.131.12.83</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-3 col-xl-3">
+                                                            <a href="http://179.131.12.84/maxtrade_05_2017/home1.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Link 2</h4>
+                                    <p>Servidor: 179.131.12.84</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-3 col-xl-3">
+                                                            <a href="http://179.131.12.85/maxtrade_05_2017/home1.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Link 3</h4>
+                                    <p>Servidor: 179.131.12.85</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-3 col-xl-3">
+                                                            <a href="http://179.131.12.86/maxtrade_05_2017/home1.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Link 4</h4>
+                                    <p>Servidor: 179.131.12.86</p>
+                                </a>
+                                                    </div>
+                                    </div>
+            </div>
+        </div>
+    </div>
+        <div class="modal-overlay" id="modal-2">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #1e293b; color: #ffffff;">
+                <div class="modal-header-bg" style="background-color: #1e293b;"></div>
+                <h2 class="modal-title">
+                    <i class="ti ti-device-desktop"></i>                    MaxTrade                                            <span class="modal-desc">ToyMania</span>
+                                    </h2>
+                <button class="modal-close" onclick="closeModal('modal-2')">
+                    <i class="ti ti-x"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="submenu-grid">
+                                            <div class="col-lg-12 col-xl-12">
+                                                            <a href="http://179.131.12.83/toymania_teste/home1.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: orangered; --card-rgb: 32, 107, 196;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Toy Teste</h4>
+                                    <p>179.131.12.83</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-3 col-xl-3">
+                                                            <a href="http://179.131.12.83/toymania_05_2017/home1.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: rgb(96,54,119); --card-rgb: 32, 107, 196;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Link 1</h4>
+                                    <p>Servidor: 179.131.12.83</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-3 col-xl-3">
+                                                            <a href="http://179.131.12.86/toymania_05_2017/home1.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: rgb(96,54,119); --card-rgb: 32, 107, 196;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Link 3</h4>
+                                    <p>Servidor: 179.131.12.86</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-3 col-xl-3">
+                                                            <a href="http://179.131.12.84/toymania_05_2017/home1.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: rgb(96,54,119); --card-rgb: 32, 107, 196;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Link 4</h4>
+                                    <p>Servidor: 179.131.12.84</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-3 col-xl-3">
+                                                            <a href="http://179.131.12.85/toymania_05_2017/home2.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: rgb(96,54,119); --card-rgb: 32, 107, 196;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Link 2</h4>
+                                    <p>Servidor: 179.131.12.85</p>
+                                </a>
+                                                    </div>
+                                    </div>
+            </div>
+        </div>
+    </div>
+        <div class="modal-overlay" id="modal-3">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #1e293b; color: #ffffff;">
+                <div class="modal-header-bg" style="background-color: #1e293b;"></div>
+                <h2 class="modal-title">
+                    <i class="ti ti-truck"></i>                    Sistemas                                            <span class="modal-desc">da Logística</span>
+                                    </h2>
+                <button class="modal-close" onclick="closeModal('modal-3')">
+                    <i class="ti ti-x"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="submenu-grid">
+                                            <div class="col-lg-3 col-xl-3">
+                                                            <a href="http://179.131.12.83/max_cte/home1.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: black; --card-rgb: 187, 170, 204;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>MaxCTE</h4>
+                                    <p>Logística</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-2 col-xl-2">
+                                                            <a href="https://alfaness.supply-access.totvs.app" target="_blank" 
+                                   class="submenu-card" style="--card-color: black; --card-rgb: 187, 170, 204;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>WMS SAAS</h4>
+                                    <p>Produção</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-2 col-xl-2">
+                                                            <a href="https://treinamento-alfaness.supply-access.totvs.app" target="_blank" 
+                                   class="submenu-card" style="--card-color: orangered; --card-rgb: 32, 107, 196;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>WMS SAAS</h4>
+                                    <p>Treinamento</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-2 col-xl-2">
+                                                            <a href="http://179.131.12.83/wstoy/home.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: black; --card-rgb: 187, 170, 204;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Web Service</h4>
+                                    <p>Toy</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-3 col-xl-3">
+                                                            <a href="https://ti.grupobarao.com.br/portaria/" target="_blank" 
+                                   class="submenu-card" style="--card-color: black; --card-rgb: 187, 170, 204;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Portaria Barão</h4>
+                                    <p>Logística</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-12 col-xl-12">
+                                                            <a href="http://179.131.12.83/toymania_05_2017/ztrade.php" target="_self" 
+                                   class="submenu-card" style="--card-color: black; --card-rgb: 187, 170, 204;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-settings"></i>                                    </div>
+                                    <h4>Mapeamento</h4>
+                                    <p>de Picking</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-4 col-xl-4">
+                                                            <a href="http://179.131.12.83/toymania_05_2017/ehome.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: rgb(96,54,119); --card-rgb: 32, 107, 196;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Expedição Toy 1</h4>
+                                    <p>179.131.12.83</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-4 col-xl-4">
+                                                            <a href="http://179.131.12.84/toymania_05_2017/ehome.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: rgb(96,54,119); --card-rgb: 32, 107, 196;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Expedição Toy 2</h4>
+                                    <p>179.131.12.84</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-4 col-xl-4">
+                                                            <a href="http://179.131.12.85/toymania_05_2017/ehome.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: rgb(96,54,119); --card-rgb: 32, 107, 196;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Expedição Toy 3</h4>
+                                    <p>179.131.12.85</p>
+                                </a>
+                                                    </div>
+                                    </div>
+            </div>
+        </div>
+    </div>
+        <div class="modal-overlay" id="modal-4">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #2590cf; color: #ffffff;">
+                <div class="modal-header-bg" style="background-color: #2590cf;"></div>
+                <h2 class="modal-title">
+                    <i class="ti ti-device-laptop"></i>                    Sistemas                                            <span class="modal-desc">do Representante</span>
+                                    </h2>
+                <button class="modal-close" onclick="closeModal('modal-4')">
+                    <i class="ti ti-x"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="submenu-grid">
+                                            <div class="col-lg-4 col-xl-4">
+                                                            <a href="http://179.131.12.84/portalbarao_05_2017/home1.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Portal</h4>
+                                    <p>Barão Distribuidor</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-4 col-xl-4">
+                                                            <a href="http://179.131.12.83/maxtrade_05_2017/shome.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>S&amp;OP</h4>
+                                    <p>Grupo Barão</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-4 col-xl-4">
+                                                            <a href="https://outlook.office.com/mail/" target="_blank" 
+                                   class="submenu-card" style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-mail"></i>                                    </div>
+                                    <h4>Outlook</h4>
+                                    <p>E-mail</p>
+                                </a>
+                                                    </div>
+                                    </div>
+            </div>
+        </div>
+    </div>
+        <div class="modal-overlay" id="modal-5">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #2590cf; color: #ffffff;">
+                <div class="modal-header-bg" style="background-color: #2590cf;"></div>
+                <h2 class="modal-title">
+                    <i class="ti ti-users"></i>                    RH                                            <span class="modal-desc">Grupo Barão</span>
+                                    </h2>
+                <button class="modal-close" onclick="closeModal('modal-5')">
+                    <i class="ti ti-x"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="submenu-grid">
+                                            <div class="col-lg-12 col-xl-12">
+                                                            <a href="https://www.ti.grupobarao.com.br/portal/blog-rh.php" target="_self" 
+                                   class="submenu-card" style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-users"></i>                                    </div>
+                                    <h4>RH</h4>
+                                    <p>F.A.Q</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-3 col-xl-3">
+                                                            <a href="http://179.131.12.85/maxrecibos/home.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>MaxTrade</h4>
+                                    <p>Recibos</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-3 col-xl-3">
+                                                            <a href="https://barao.feedback.house/login" target="_blank" 
+                                   class="submenu-card" style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-mail"></i>                                    </div>
+                                    <h4>FeedBack</h4>
+                                    <p>House</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-3 col-xl-3">
+                                                            <a href="https://outlook.office.com/mail/" target="_blank" 
+                                   class="submenu-card" style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-mail"></i>                                    </div>
+                                    <h4>Outlook</h4>
+                                    <p>E-mail</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-6 col-xl-6">
+                                                            <a href="http://ti.grupobarao.com.br/portal/download_colaboradores.php" target="_blank" 
+                                   class="submenu-card" style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Downloads</h4>
+                                    <p>RH</p>
+                                </a>
+                                                    </div>
+                                    </div>
+            </div>
+        </div>
+    </div>
+        <div class="modal-overlay" id="modal-6">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #2590cf; color: #ffffff;">
+                <div class="modal-header-bg" style="background-color: #2590cf;"></div>
+                <h2 class="modal-title">
+                    <i class="ti ti-settings"></i>                    TI Suporte                                            <span class="modal-desc">Grupo Barão</span>
+                                    </h2>
+                <button class="modal-close" onclick="closeModal('modal-6')">
+                    <i class="ti ti-x"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="submenu-grid">
+                                            <div class="col-lg-6 col-xl-6">
+                                                            <a href="https://ti.grupobarao.com.br/systems/comite_de_demandas" target="_blank" 
+                                   class="submenu-card" style="--card-color: black; --card-rgb: 187, 170, 204;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-users"></i>                                    </div>
+                                    <h4>Comitê de Demandas</h4>
+                                    <p>Grupo Barão</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-3 col-xl-3">
+                                                            <a href="http://ti.grupobarao.com.br/glpi" target="_blank" 
+                                   class="submenu-card" style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>GLPI</h4>
+                                    <p>Abrir Chamados</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-3 col-xl-3">
+                                                            <a href="docs/Ficha-TI.xlsx" target="_blank" 
+                                   class="submenu-card" style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Solicitação de Acesso</h4>
+                                    <p>Ficha-TI.xlsx</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-6 col-xl-6">
+                                                            <a href="http://www.ti.grupobarao.com.br/portal/downloads/" target="_blank" 
+                                   class="submenu-card" style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Downloads</h4>
+                                    <p>Arquivos</p>
+                                </a>
+                                                    </div>
+                                            <div class="col-lg-6 col-xl-6">
+                                                            <a href="http://www.ti.grupobarao.com.br/inventario.html" target="_blank" 
+                                   class="submenu-card" style="--card-color: #2590cf; --card-rgb: 37, 144, 207;">
+                                    <div class="submenu-icon">
+                                        <i class="ti ti-link"></i>                                    </div>
+                                    <h4>Inventário</h4>
+                                    <p>Aplicativo</p>
+                                </a>
+                                                    </div>
+                                    </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Alert Modal -->
+        <div class="modal-overlay" id="alertsModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header" style="background-color: var(--card-color, #dc3545); color: #ffffff;">
+                <div class="modal-header-bg" style="background-color: var(--card-color, #dc3545);"></div>
+                <h2 class="modal-title">
+                    <i class="ti ti-bell pe-2"></i> Alertas Importantes
+                </h2>
+                <button class="modal-close" onclick="closeModal('alertsModal')">
+                    <i class="ti ti-x"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="background-color: var(--bg-body);">
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; display: flex; gap: 1.5rem; box-shadow: var(--shadow-sm);">
+                                                    <img src="uploads_alertas/img_68126c10c4a0e2.20092154.png"
+                                 alt="ilustração"
+                                 style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 1px solid var(--border-color);"
+                                 onclick="openImageModal('uploads_alertas/img_68126c10c4a0e2.20092154.png')">
+                                                <div style="flex: 1;">
+                            <h4 style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text-primary);">[Alerta] Implementação de Autenticação em Dois Fatores (2FA)</h4>
+                            <div style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 1rem;">
+                                <p data-start="0" data-end="168">A ativa&ccedil;&atilde;o da autentica&ccedil;&atilde;o em dois fatores (2FA) no Maxtrade j&aacute; est&aacute; em andamento. A tela de login agora exibe tr&ecirc;s campos: <strong data-start="124" data-end="167">Usu&aacute;rio, Senha e C&oacute;digo de Autentica&ccedil;&atilde;o</strong>.</p>
+<p data-start="170" data-end="265">Se o 2FA ainda n&atilde;o estiver ativo para voc&ecirc;, deixe o campo <strong data-start="228" data-end="254">C&oacute;digo de Autentica&ccedil;&atilde;o</strong> em branco.</p>
+<p data-start="267" data-end="411" data-is-last-node="" data-is-only-node="">A habilita&ccedil;&atilde;o ser&aacute; feita em etapas, com aviso pr&eacute;vio e orienta&ccedil;&otilde;es para n&atilde;o afetar o uso do sistema. Em caso de d&uacute;vidas, procure a equipe de TI.</p>                            </div>
+                                                            <a href="uploads_alertas/doc_68126c441dd684.72400166.pdf" 
+                                   download 
+                                   style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 8px; background: rgba(32,107,196,0.1); color: #206bc4; font-weight: 500; font-size: 0.85rem; border: 1px solid rgba(32,107,196,0.2); transition: all 0.2s;">
+                                    <i class="ti ti-download"></i> Baixar anexo
+                                </a>
+                                                    </div>
+                    </div>
+                                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Image Preview Modal -->
+    <div class="modal-overlay" id="imagePreviewModal" style="background: rgba(0,0,0,0.85);">
+        <div class="modal-content" style="max-width: 90vw; max-height: 90vh; background: transparent; box-shadow: none; border: none; align-items: center; justify-content: center; overflow: visible;">
+            <button class="modal-close" onclick="closeModal('imagePreviewModal')" style="position: absolute; top: -40px; right: 0; background: rgba(255,255,255,0.2); color: white;">
+                <i class="ti ti-x"></i>
+            </button>
+            <img id="previewImage" src="" alt="Preview" style="max-width: 100%; max-height: 80vh; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+        </div>
+    </div>
+
+    <!-- External Report Modal -->
+    <!-- Modal de Agradecimento (successModal) -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:15px;">
+      <div class="modal-header">
+        <h5 class="modal-title">Obrigado!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        <p>Relatório enviado com sucesso. Obrigado por informar!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Reporte de Instabilidade (incidentModal) -->
+<div class="modal fade" id="incidentModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:15px;">
+      <div class="modal-header">
+        <h5 class="modal-title">Ajude-nos a melhorar: reporte uma instabilidade</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <form method="POST" action="index.php">
+        <div class="modal-body">
+          <div class="container-fluid">
+            <div class="row g-3">
+              <!-- Linha 1: Seu Nome e Local -->
+              <div class="col-12 col-md-6">
+                <label for="reported_by" class="form-label">Seu Nome</label>
+                <input type="text" name="reported_by" id="reported_by" class="form-control" required>
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="location" class="form-label">Local</label>
+                <input type="text" name="location" id="location" class="form-control">
+              </div>
+              <!-- Linha 2: Tipo de Problema e Nível de Gravidade -->
+              <div class="col-12 col-md-6">
+                <label for="type_of_issue" class="form-label">Tipo de Problema</label>
+                <input type="text" name="type_of_issue" id="type_of_issue" class="form-control" placeholder="Ex.: falha no sistema, instabilidade">
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="severity_level" class="form-label">Nível de Gravidade</label>
+                <select name="severity_level" id="severity_level" class="form-select">
+                  <option value="Baixo">Baixo</option>
+                  <option value="Médio">Médio</option>
+                  <option value="Alto">Alto</option>
+                </select>
+              </div>
+              <!-- Linha 3: Data e Hora da Ocorrência -->
+              <div class="col-12">
+                <label for="occurrence_datetime" class="form-label">Data e Hora da Ocorrência</label>
+                <input type="datetime-local" name="occurrence_datetime" id="occurrence_datetime" class="form-control">
+                <small class="text-muted">Informe a data/hora em que ocorreu o problema (se diferente do horário atual)</small>
+              </div>
+              <!-- Linha 4: Descrição -->
+              <div class="col-12">
+                <label for="description" class="form-label">Descrição</label>
+                <textarea name="description" id="description" rows="3" class="form-control" placeholder="Descreva o problema"></textarea>
+              </div>
+              <!-- Linha 5: Informações Adicionais -->
+              <div class="col-12">
+                <label for="additional_info" class="form-label">Informações Adicionais</label>
+                <textarea name="additional_info" id="additional_info" rows="2" class="form-control" placeholder="Outras informações que possam ajudar"></textarea>
+              </div>
+              <!-- Linha 6: Aviso -->
+              <div class="col-12">
+                <div class="alert alert-info mt-3">
+                  <strong>Aviso:</strong> Se você identificar instabilidades, por favor, reporte para que possamos melhorar o sistema!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" name="incident_submit" class="btn btn-success">Enviar Relatório</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Script para exibir o modal de agradecimento uma vez e remover backdrop -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Ajuste se quiser exibir automaticamente
+  // com a verificação do index
+});
+</script>
+
+    <!-- Scripts -->
+    <script>
+        // Modal Handlers
+        function openModal(id) {
+            const overlay = document.getElementById(id);
+            if(overlay) {
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeModal(id) {
+            const overlay = document.getElementById(id);
+            if(overlay) {
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Image Preview Handler
+        function openImageModal(src) {
+            const img = document.getElementById('previewImage');
+            if(img) {
+                img.src = src;
+                openModal('imagePreviewModal');
+            }
+        }
+
+        // Close modal when clicking outside
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                // If click is directly on the overlay background, close it
+                if (e.target === this) {
+                    this.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                const activeModal = document.querySelector('.modal-overlay.active');
+                if (activeModal) {
+                    activeModal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const body = document.body;
+
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-theme', currentTheme);
+        updateThemeIcon(currentTheme);
+
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.className = 'ti ti-moon';
+            } else {
+                themeIcon.className = 'ti ti-sun';
+            }
+        }
+    </script>
+</body>
+</html>

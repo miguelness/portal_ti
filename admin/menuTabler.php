@@ -107,6 +107,7 @@ try {
             <?php if (hasAccess('Documentos RH', $user_accesses)): ?><li><hr class="dropdown-divider"></li><?php endif; ?>
             <li><h6 class="dropdown-header">Colaboradores</h6></li>
             <li><a class="dropdown-item" href="colaboradores.php"><i class="ti ti-users me-2"></i>Gerenciar</a></li>
+            <li><a class="dropdown-item" href="organograma_admin.php"><i class="ti ti-hierarchy-2 me-2"></i>Organograma</a></li>
             <li><a class="dropdown-item" href="colaboradores_import.php"><i class="ti ti-file-import me-2"></i>Importar Planilha</a></li>
             <?php endif; ?>
           </ul>
@@ -140,7 +141,17 @@ try {
         </li>
         <?php endif; ?>
 
+        <!-- Monitoramento -->
+        <?php if (hasAccess('Super Administrador', $user_accesses)): ?>
+        <li class="nav-item">
+          <a class="nav-link" href="servidores_admin.php">
+            <i class="ti ti-activity me-2"></i>Monitoramento/Status
+          </a>
+        </li>
+        <?php endif; ?>
+
         <!-- Sair -->
+
         <li class="nav-item mt-3">
           <a class="nav-link" href="logout.php">
             <i class="ti ti-logout me-2"></i>Sair

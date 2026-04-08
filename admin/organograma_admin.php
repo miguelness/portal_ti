@@ -1,7 +1,7 @@
 <?php
 /**
  * Administração do Organograma
- * Interface para gerenciar a estrutura organizacional
+ * Interface para gerenciar a estrutura organizacional (Tabela colaboradores)
  */
 
 $requiredAccess = ['Organograma', 'Super Administrador'];
@@ -16,66 +16,91 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
     try {
-        if ($action === 'add') {
-            $stmt = $pdo->prepare("
-                INSERT INTO organograma (nome, cargo, departamento, tipo_contrato, parent_id, nivel_hierarquico, ordem_exibicao, email, telefone, descricao) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ");
-            $stmt->execute([
-                $_POST['nome'],
-                $_POST['cargo'],
-                $_POST['departamento'],
-                $_POST['tipo_contrato'],
-                $_POST['parent_id'] ?: null,
-                $_POST['nivel_hierarquico'],
-                $_POST['ordem_exibicao'],
-                $_POST['email'] ?: null,
-                $_POST['telefone'] ?: null,
-                $_POST['descricao'] ?: null
-            ]);
-            $toastMsg = "Colaborador adicionado com sucesso!";
-            $toastType = "success";
+        if ($action === 'add' || $action === 'update') {
+            $nome = $_POST['nome'];
+            $cargo = $_POST['cargo'];
+            $departamento = $_POST['departamento'];
+            $empresa = $_POST['empresa'];
+            $tipo_contrato = $_POST['tipo_contrato'];
+            $parent_id = $_POST['parent_id'] ?: null;
+            $nivel_hierarquico = (int)$_POST['nivel_hierarquico'];
+            $ordem_exibicao = (int)$_POST['ordem_exibicao'];
+            $email = $_POST['email'] ?: null;
+            $ramal = $_POST['ramal'] ?: null;
+            $telefone = $_POST['telefone'] ?: null;
+            $teams = $_POST['teams'] ?: null;
+            $data_admissao = $_POST['data_admissao'] ?: null;
+            $descricao = $_POST['descricao'] ?: null;
+            $observacoes = $_POST['observacoes'] ?: null;
+            $ativo = isset($_POST['ativo']) ? 1 : 0;
 
-        } elseif ($action === 'update') {
-            $id = (int)$_POST['id'];
-            $stmt = $pdo->prepare("
-                UPDATE organograma SET 
-                    nome = ?, 
-                    cargo = ?, 
-                    departamento = ?, 
-                    tipo_contrato = ?, 
-                    parent_id = ?, 
-                    nivel_hierarquico = ?, 
-                    ordem_exibicao = ?, 
-                    email = ?, 
-                    telefone = ?, 
-                    descricao = ?
-                WHERE id = ?
-            ");
-            $stmt->execute([
-                $_POST['nome'],
-                $_POST['cargo'],
-                $_POST['departamento'],
-                $_POST['tipo_contrato'],
-                $_POST['parent_id'] ?: null,
-                $_POST['nivel_hierarquico'],
-                $_POST['ordem_exibicao'],
-                $_POST['email'] ?: null,
-                $_POST['telefone'] ?: null,
-                $_POST['descricao'] ?: null,
-                $id
-            ]);
-            $toastMsg = "Colaborador atualizado com sucesso!";
-            $toastType = "success";
+            // Processar upload de foto
+            $foto_nome = null;
+            if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
+                $upload_dir = '../organograma/uploads/';
+                if (!is_dir($upload_dir)) {
+                    mkdir($upload_dir, 0777, true);
+                }
+                
+                $file_extension = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
+                $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
+                
+                if (in_array($file_extension, $allowed_extensions)) {
+                    $foto_nome = uniqid() . '.' . $file_extension;
+                    $upload_path = $upload_dir . $foto_nome;
+                    
+                    if (!move_uploaded_file($_FILES['foto']['tmp_name'], $upload_path)) {
+                        throw new Exception("Erro ao fazer upload da foto.");
+                    }
+                } else {
+                    throw new Exception("Formato de arquivo não permitido. Use JPG, PNG ou GIF.");
+                }
+            }
+
+            if ($action === 'add') {
+                $stmt = $pdo->prepare("
+                    INSERT INTO colaboradores (nome, cargo, departamento, empresa, tipo_contrato, parent_id, nivel_hierarquico, ordem_exibicao, email, ramal, telefone, teams, data_admissao, descricao, observacoes, foto, ativo) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ");
+                $stmt->execute([
+                    $nome, $cargo, $departamento, $empresa, $tipo_contrato, $parent_id, $nivel_hierarquico, $ordem_exibicao, $email, $ramal, $telefone, $teams, $data_admissao, $descricao, $observacoes, $foto_nome, $ativo
+                ]);
+                $toastMsg = "Colaborador adicionado com sucesso!";
+                $toastType = "success";
+
+            } else {
+                $id = (int)$_POST['id'];
+                
+                $sql = "UPDATE colaboradores SET 
+                            nome = ?, cargo = ?, departamento = ?, empresa = ?, tipo_contrato = ?, 
+                            parent_id = ?, nivel_hierarquico = ?, ordem_exibicao = ?, 
+                            email = ?, ramal = ?, telefone = ?, teams = ?, 
+                            data_admissao = ?, descricao = ?, observacoes = ?, ativo = ?";
+                
+                $params = [$nome, $cargo, $departamento, $empresa, $tipo_contrato, $parent_id, $nivel_hierarquico, $ordem_exibicao, $email, $ramal, $telefone, $teams, $data_admissao, $descricao, $observacoes, $ativo];
+
+                if ($foto_nome) {
+                    $sql .= ", foto = ?";
+                    $params[] = $foto_nome;
+                }
+
+                $sql .= " WHERE id = ?";
+                $params[] = $id;
+
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute($params);
+                $toastMsg = "Colaborador atualizado com sucesso!";
+                $toastType = "success";
+            }
 
         } elseif ($action === 'delete') {
-            $stmt = $pdo->prepare("DELETE FROM organograma WHERE id = ?");
+            $stmt = $pdo->prepare("DELETE FROM colaboradores WHERE id = ?");
             $stmt->execute([$_POST['id']]);
             $toastMsg = "Colaborador removido com sucesso!";
             $toastType = "success";
         }
-    } catch (PDOException $e) {
-        $toastMsg = "Erro no banco de dados: " . $e->getMessage();
+    } catch (Exception $e) {
+        $toastMsg = "Erro: " . $e->getMessage();
         $toastType = "danger";
     }
 }
@@ -84,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $search = $_GET['search'] ?? '';
 $departamento_filter = $_GET['departamento'] ?? '';
 
-$where_conditions = ["ativo = 1"];
+$where_conditions = ["1=1"];
 $params = [];
 
 if ($search) {
@@ -102,8 +127,8 @@ $where_clause = implode(" AND ", $where_conditions);
 
 $stmt = $pdo->prepare("
     SELECT o.*, p.nome as parent_nome 
-    FROM organograma o 
-    LEFT JOIN organograma p ON o.parent_id = p.id 
+    FROM colaboradores o 
+    LEFT JOIN colaboradores p ON o.parent_id = p.id 
     WHERE $where_clause
     ORDER BY departamento, nivel_hierarquico, ordem_exibicao, nome
 ");
@@ -111,11 +136,11 @@ $stmt->execute($params);
 $colaboradores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Buscar departamentos para filtro
-$dept_stmt = $pdo->query("SELECT DISTINCT departamento FROM organograma WHERE ativo = 1 ORDER BY departamento");
+$dept_stmt = $pdo->query("SELECT DISTINCT departamento FROM colaboradores WHERE ativo = 1 ORDER BY departamento");
 $departamentos = $dept_stmt->fetchAll(PDO::FETCH_COLUMN);
 
 // Buscar possíveis supervisores para dropdown
-$supervisores_stmt = $pdo->query("SELECT id, nome, cargo, departamento FROM organograma WHERE ativo = 1 ORDER BY departamento, nome");
+$supervisores_stmt = $pdo->query("SELECT id, nome, cargo, departamento FROM colaboradores WHERE ativo = 1 ORDER BY departamento, nome");
 $supervisores = $supervisores_stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $pageTitle = 'Gerenciar Organograma';
@@ -204,7 +229,8 @@ ob_start();
                             <th>Nome</th>
                             <th>Cargo</th>
                             <th>Departamento</th>
-                            <th>Tipo</th>
+                            <th>Empresa</th>
+                            <th>Status</th>
                             <th>Supervisor</th>
                             <th>Nível</th>
                             <th class="w-1">Ações</th>
@@ -215,8 +241,10 @@ ob_start();
                         <tr>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <div class="avatar avatar-sm me-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                                        <?= strtoupper(substr($colaborador['nome'], 0, 1)) ?>
+                                    <div class="avatar avatar-sm me-3" style="background-image: url(<?= !empty($colaborador['foto']) ? '../organograma/uploads/' . $colaborador['foto'] : 'https://ui-avatars.com/api/?name=' . urlencode($colaborador['nome']) . '&background=random' ?>)">
+                                        <?php if (empty($colaborador['foto'])): ?>
+                                            <?= strtoupper(substr($colaborador['nome'], 0, 1)) ?>
+                                        <?php endif; ?>
                                     </div>
                                     <div>
                                         <div class="fw-bold"><?= htmlspecialchars($colaborador['nome']) ?></div>
@@ -230,9 +258,10 @@ ob_start();
                             <td>
                                 <span class="badge bg-blue-lt"><?= htmlspecialchars($colaborador['departamento']) ?></span>
                             </td>
+                            <td><?= htmlspecialchars($colaborador['empresa']) ?></td>
                             <td>
-                                <span class="badge <?= $colaborador['tipo_contrato'] === 'PJ' ? 'bg-orange-lt' : ($colaborador['tipo_contrato'] === 'Aprendiz' ? 'bg-green-lt' : 'bg-blue-lt') ?>">
-                                    <?= htmlspecialchars($colaborador['tipo_contrato']) ?>
+                                <span class="badge <?= $colaborador['ativo'] ? 'bg-green' : 'bg-red' ?>">
+                                    <?= $colaborador['ativo'] ? 'Ativo' : 'Inativo' ?>
                                 </span>
                             </td>
                             <td>
@@ -268,7 +297,7 @@ ob_start();
                 <h5 class="modal-title" id="modalTitle">Adicionar Colaborador</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="action" id="formAction" value="add">
                 <input type="hidden" name="id" id="colabId" value="">
                 
@@ -301,6 +330,20 @@ ob_start();
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
+                                <label class="form-label required">Empresa</label>
+                                <select class="form-select" name="empresa" id="empresa" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="Grupo Barão">Grupo Barão</option>
+                                    <option value="Barão">Barão</option>
+                                    <option value="Toymania">Toymania</option>
+                                    <option value="Alfaness">Alfaness</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
                                 <label class="form-label required">Tipo de Contrato</label>
                                 <select class="form-select" name="tipo_contrato" id="tipo_contrato" required>
                                     <option value="CLT">CLT</option>
@@ -308,6 +351,15 @@ ob_start();
                                     <option value="Aprendiz">Aprendiz</option>
                                     <option value="Terceirizado">Terceirizado</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" name="ativo" id="ativo" checked>
+                                    <label class="form-check-label" for="ativo">Ativo</label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -339,22 +391,59 @@ ob_start();
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label class="form-label">E-mail</label>
                                 <input type="email" class="form-control" name="email" id="email">
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Ramal</label>
+                                <input type="text" class="form-control" name="ramal" id="ramal">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label class="form-label">Telefone</label>
                                 <input type="text" class="form-control" name="telefone" id="telefone">
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Teams (URL ou ID)</label>
+                                <input type="text" class="form-control" name="teams" id="teams">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Data de Admissão</label>
+                                <input type="date" class="form-control" name="data_admissao" id="data_admissao">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Foto</label>
+                                <input type="file" class="form-control" name="foto" id="foto" accept="image/*">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                             <div id="fotoPreview" class="mt-2" style="display:none">
+                                <img src="" alt="Preview" class="avatar avatar-lg">
+                             </div>
+                        </div>
+                    </div>
                     <div class="mb-3">
-                        <label class="form-label">Descrição</label>
-                        <textarea class="form-control" name="descricao" id="descricao" rows="3"></textarea>
+                        <label class="form-label">Descrição (Cargo)</label>
+                        <textarea class="form-control" name="descricao" id="descricao" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Observações</label>
+                        <textarea class="form-control" name="observacoes" id="observacoes" rows="2"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -378,9 +467,9 @@ $(document).ready(function() {
         },
         pageLength: 25,
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todos"]],
-        order: [[2, 'asc'], [5, 'asc'], [0, 'asc']],
+        order: [[2, 'asc'], [6, 'asc'], [0, 'asc']],
         columnDefs: [
-            { orderable: false, targets: [6] }
+            { orderable: false, targets: [7] }
         ]
     });
 });
@@ -390,18 +479,25 @@ function resetModal() {
     document.getElementById("formAction").value = "add";
     document.getElementById("colabId").value = "";
     document.getElementById("btnSalvar").textContent = "Adicionar";
+    document.getElementById("fotoPreview").style.display = "none";
     
     // Resetar campos
     document.getElementById("nome").value = "";
     document.getElementById("cargo").value = "";
     document.getElementById("departamento").value = "";
+    document.getElementById("empresa").value = "";
     document.getElementById("tipo_contrato").value = "CLT";
     document.getElementById("parent_id").value = "";
     document.getElementById("nivel_hierarquico").value = "1";
     document.getElementById("ordem_exibicao").value = "0";
     document.getElementById("email").value = "";
+    document.getElementById("ramal").value = "";
     document.getElementById("telefone").value = "";
+    document.getElementById("teams").value = "";
+    document.getElementById("data_admissao").value = "";
     document.getElementById("descricao").value = "";
+    document.getElementById("observacoes").value = "";
+    document.getElementById("ativo").checked = true;
 }
 
 function editColaborador(data) {
@@ -414,13 +510,26 @@ function editColaborador(data) {
     document.getElementById("nome").value = data.nome || "";
     document.getElementById("cargo").value = data.cargo || "";
     document.getElementById("departamento").value = data.departamento || "";
+    document.getElementById("empresa").value = data.empresa || "";
     document.getElementById("tipo_contrato").value = data.tipo_contrato || "CLT";
     document.getElementById("parent_id").value = data.parent_id || "";
     document.getElementById("nivel_hierarquico").value = data.nivel_hierarquico || 1;
     document.getElementById("ordem_exibicao").value = data.ordem_exibicao || 0;
     document.getElementById("email").value = data.email || "";
+    document.getElementById("ramal").value = data.ramal || "";
     document.getElementById("telefone").value = data.telefone || "";
+    document.getElementById("teams").value = data.teams || "";
+    document.getElementById("data_admissao").value = data.data_admissao || "";
     document.getElementById("descricao").value = data.descricao || "";
+    document.getElementById("observacoes").value = data.observacoes || "";
+    document.getElementById("ativo").checked = data.ativo == 1;
+
+    if(data.foto) {
+        document.querySelector("#fotoPreview img").src = "../organograma/uploads/" + data.foto;
+        document.getElementById("fotoPreview").style.display = "block";
+    } else {
+        document.getElementById("fotoPreview").style.display = "none";
+    }
     
     var myModal = new bootstrap.Modal(document.getElementById("modalColaborador"));
     myModal.show();

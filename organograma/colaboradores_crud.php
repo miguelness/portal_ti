@@ -1,5 +1,7 @@
 <?php
 require_once 'config.php';
+$requiredAccess = ['Organograma', 'Gerenciar Organograma'];
+require_once 'check_access.php';
 
 // Processar ações AJAX
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

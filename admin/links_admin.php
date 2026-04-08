@@ -39,10 +39,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($action === 'create') {
             $sql = "INSERT INTO menu_links
                       (titulo, descricao, url, target_blank, cor, tamanho, icone, ordem, status,
-                       parent_id, modal_class)
+                       parent_id, modal_class, is_novidade, is_treinamento, is_interno,
+                       verificar_estabilidade, tempo_bom_ms, tempo_lento_ms)
                     VALUES
                       (:titulo, :descricao, :url, :target_blank, :cor, :tamanho, :icone, :ordem,
-                       :status, :parent_id, :modal_class)";
+                       :status, :parent_id, :modal_class, :is_novidade, :is_treinamento, :is_interno,
+                       :verificar_estabilidade, :tempo_bom_ms, :tempo_lento_ms)";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
                 ':titulo'       => $_POST['titulo'] ?? '',
@@ -52,10 +54,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':cor'          => $_POST['cor'] ?? '#206bc4',
                 ':tamanho'      => $_POST['tamanho'] ?? 'col-lg-3 col-xl-3',
                 ':icone'        => $_POST['icone'] ?? '',
-                ':ordem'        => $_POST['ordem'] ?? 0, // Será recalculado via JS
+                ':ordem'        => $_POST['ordem'] ?? 0,
                 ':status'       => $_POST['status'] ?? 'ativo',
                 ':parent_id'    => $_POST['parent_id'] ?: null,
-                ':modal_class'  => $_POST['modal_class'] ?? ''
+                ':modal_class'  => $_POST['modal_class'] ?? '',
+                ':is_novidade'  => isset($_POST['is_novidade']) ? 1 : 0,
+                ':is_treinamento'=> isset($_POST['is_treinamento']) ? 1 : 0,
+                ':is_interno'   => isset($_POST['is_interno']) ? 1 : 0,
+                ':verificar_estabilidade' => isset($_POST['verificar_estabilidade']) ? 1 : 0,
+                ':tempo_bom_ms' => (int)($_POST['tempo_bom_ms'] ?? 2000),
+                ':tempo_lento_ms' => (int)($_POST['tempo_lento_ms'] ?? 5000)
             ]);
             header('Location: links_admin.php?success=added');
             exit;
@@ -65,17 +73,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($id <= 0) throw new Exception("ID inválido");
 
             $sql = "UPDATE menu_links SET
-                      titulo = :titulo,
-                      descricao = :descricao,
-                      url = :url,
-                      target_blank = :target_blank,
-                      cor = :cor,
-                      tamanho = :tamanho,
-                      icone = :icone,
-                      ordem = :ordem,
-                      status = :status,
-                      parent_id = :parent_id,
-                      modal_class = :modal_class
+                      titulo = :titulo, descricao = :descricao, url = :url,
+                      target_blank = :target_blank, cor = :cor, tamanho = :tamanho,
+                      icone = :icone, ordem = :ordem, status = :status,
+                      parent_id = :parent_id, modal_class = :modal_class,
+                      is_novidade = :is_novidade, is_treinamento = :is_treinamento,
+                      is_interno = :is_interno, verificar_estabilidade = :verificar_estabilidade,
+                      tempo_bom_ms = :tempo_bom_ms, tempo_lento_ms = :tempo_lento_ms
                     WHERE id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
@@ -90,6 +94,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':status'       => $_POST['status'] ?? 'ativo',
                 ':parent_id'    => $_POST['parent_id'] ?: null,
                 ':modal_class'  => $_POST['modal_class'] ?? '',
+                ':is_novidade'  => isset($_POST['is_novidade']) ? 1 : 0,
+                ':is_treinamento'=> isset($_POST['is_treinamento']) ? 1 : 0,
+                ':is_interno'   => isset($_POST['is_interno']) ? 1 : 0,
+                ':verificar_estabilidade' => isset($_POST['verificar_estabilidade']) ? 1 : 0,
+                ':tempo_bom_ms' => (int)($_POST['tempo_bom_ms'] ?? 2000),
+                ':tempo_lento_ms' => (int)($_POST['tempo_lento_ms'] ?? 5000),
                 ':id'           => $id
             ]);
             header('Location: links_admin.php?success=updated');
@@ -112,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Função recursiva para atualizar ordem e parent_id
-            function updateOrder($items, $parentId = null, &$pdo) {
+            function updateOrder($items, &$pdo, $parentId = null) {
                 foreach ($items as $item) {
                     $order = $item['order']; // Agora pegamos a string "1.1", "1.2" enviada pelo JS
                     $id = (int)$item['id'];
@@ -123,13 +133,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     // Processa filhos recursivamente
                     if (isset($item['children']) && is_array($item['children'])) {
-                        updateOrder($item['children'], $id, $pdo);
+                        updateOrder($item['children'], $pdo, $id);
                     }
                 }
             }
             
             $pdo->beginTransaction();
-            updateOrder($input, null, $pdo);
+            updateOrder($input, $pdo, null);
             $pdo->commit();
             
             exit('success');
@@ -417,6 +427,13 @@ function resetModal() {
     document.querySelector("select[name='parent_id']").value = "";
     document.querySelector("select[name='status']").value = "ativo";
     document.querySelector("select[name='modal_class']").value = "modal-85";
+    document.querySelector("input[name='is_novidade']").checked = false;
+    document.querySelector("input[name='is_treinamento']").checked = false;
+    document.querySelector("input[name='is_interno']").checked = false;
+    document.querySelector("input[name='verificar_estabilidade']").checked = false;
+    document.querySelector("input[name='tempo_bom_ms']").value = "2000";
+    document.querySelector("input[name='tempo_lento_ms']").value = "5000";
+    document.getElementById('healthFields').style.display = 'none';
 
     // Triggers
     document.getElementById("cor").dispatchEvent(new Event('change'));
@@ -440,6 +457,13 @@ function editLink(data) {
     document.querySelector("select[name='parent_id']").value = data.parent_id || "";
     document.querySelector("select[name='status']").value = data.status || "ativo";
     document.querySelector("select[name='modal_class']").value = data.modal_class || "";
+    document.querySelector("input[name='is_novidade']").checked = (data.is_novidade == 1);
+    document.querySelector("input[name='is_treinamento']").checked = (data.is_treinamento == 1);
+    document.querySelector("input[name='is_interno']").checked = (data.is_interno == 1);
+    document.querySelector("input[name='verificar_estabilidade']").checked = (data.verificar_estabilidade == 1);
+    document.querySelector("input[name='tempo_bom_ms']").value = data.tempo_bom_ms || 2000;
+    document.querySelector("input[name='tempo_lento_ms']").value = data.tempo_lento_ms || 5000;
+    document.getElementById('healthFields').style.display = (data.verificar_estabilidade == 1) ? 'block' : 'none';
 
     // Triggers
     document.getElementById("cor").dispatchEvent(new Event('change'));
@@ -470,6 +494,9 @@ ob_start();
                 <div class="btn-list">
                     <a href="../index-tabler-modern.php" class="btn btn-outline-secondary" target="_blank">
                         <i class="ti ti-eye me-1"></i> Visualizar Portal
+                    </a>
+                    <a href="check_links_health.php" target="_blank" class="btn btn-ghost-success" title="Executar verificação manual de todos os links monitorados">
+                        <i class="ti ti-heartbeat me-1"></i> Verificar Estabilidade Agora
                     </a>
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal" onclick="resetModal()">
                         <i class="ti ti-plus me-1"></i> Novo Item
@@ -513,7 +540,13 @@ ob_start();
                             'ordem' => $item['ordem'],
                             'status' => $item['status'],
                             'parent_id' => $item['parent_id'],
-                            'modal_class' => $item['modal_class']
+                            'modal_class' => $item['modal_class'],
+                            'is_novidade' => $item['is_novidade'],
+                            'is_treinamento' => $item['is_treinamento'],
+                            'is_interno' => $item['is_interno'],
+                            'verificar_estabilidade' => $item['verificar_estabilidade'],
+                            'tempo_bom_ms' => $item['tempo_bom_ms'],
+                            'tempo_lento_ms' => $item['tempo_lento_ms']
                         ]);
                         
                         echo '<div class="list-group-item list-group-object p-2" data-id="' . $item['id'] . '">';
@@ -532,6 +565,16 @@ ob_start();
                                     echo '</div>';
                                     
                                     if ($item['status'] !== 'ativo') echo '<span class="badge bg-danger ms-2">Inativo</span>';
+                                    if ($item['is_novidade'] == 1) echo '<span class="badge bg-warning ms-2" title="Alerta em destaque de novidade"><i class="ti ti-star"></i> Novidade</span>';
+                                    if ($item['is_treinamento'] == 1) echo '<span class="badge bg-purple ms-2" title="Este cartão carrega vídeos de treinamento em vez de link"><i class="ti ti-school"></i> Grupo de Treinamento</span>';
+                                    if ($item['is_interno'] == 1) echo '<span class="badge bg-dark ms-2" title="Visível apenas na rede interna"><i class="ti ti-lock"></i> Interno</span>';
+                                    if ($item['verificar_estabilidade'] == 1) {
+                                        $ls = $item['link_status'] ?? null;
+                                        if ($ls === 'online') echo '<span class="badge bg-success ms-2" title="'.$item['tempo_resposta_ms'].'ms - '.($item['ultimo_check'] ? date('d/m H:i', strtotime($item['ultimo_check'])) : '').' "><i class="ti ti-circle-check"></i> Online</span>';
+                                        elseif ($ls === 'lento') echo '<span class="badge bg-warning ms-2" title="'.$item['tempo_resposta_ms'].'ms - '.($item['ultimo_check'] ? date('d/m H:i', strtotime($item['ultimo_check'])) : '').'"><i class="ti ti-alert-triangle"></i> Lento</span>';
+                                        elseif ($ls === 'offline') echo '<span class="badge bg-danger ms-2" title="'.$item['tempo_resposta_ms'].'ms - '.($item['ultimo_check'] ? date('d/m H:i', strtotime($item['ultimo_check'])) : '').'"><i class="ti ti-wifi-off"></i> Offline</span>';
+                                        else echo '<span class="badge bg-secondary ms-2"><i class="ti ti-clock"></i> Aguardando Check</span>';
+                                    }
                                 echo '</div>';
                                 
                                 echo '<div class="btn-list flex-nowrap ms-2">';
@@ -604,6 +647,40 @@ ob_start();
                         <input class="form-check-input" type="checkbox" name="target_blank">
                         <span class="form-check-label"><i class="ti ti-external-link me-1"></i> Abrir em nova aba/janela</span>
                     </label>
+                    <label class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" name="is_novidade">
+                        <span class="form-check-label"><i class="ti ti-star me-1 text-warning"></i> Destacar como Novidade <small class="text-muted">(Aplica aura pulsante)</small></span>
+                    </label>
+                    <label class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" name="is_treinamento">
+                        <span class="form-check-label"><i class="ti ti-school me-1 text-purple"></i> Abrir como Grupo de Treinamentos <small class="text-muted">(Ignora a URL e abre Videos na Tela Principal)</small></span>
+                    </label>
+                    <label class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" name="is_interno">
+                        <span class="form-check-label"><i class="ti ti-lock me-1 text-dark"></i> Somente Rede Interna <small class="text-muted">(Visível apenas para IPs cadastrados)</small></span>
+                    </label>
+                    <label class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" name="verificar_estabilidade" onchange="document.getElementById('healthFields').style.display = this.checked ? 'block' : 'none'">
+                        <span class="form-check-label"><i class="ti ti-heartbeat me-1 text-success"></i> Monitorar Estabilidade <small class="text-muted">(Verifica se o link está online)</small></span>
+                    </label>
+                </div>
+
+                <div id="healthFields" style="display: none;" class="mb-3">
+                    <div class="alert alert-info py-2 mb-2">
+                        <small><i class="ti ti-info-circle me-1"></i> Defina os limites de tempo de resposta para este link (em milissegundos).</small>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="ti ti-circle-check me-1 text-success"></i> Tempo "Bom" (ms)</label>
+                            <input type="number" name="tempo_bom_ms" class="form-control" value="2000" min="100" step="100" placeholder="2000">
+                            <small class="text-muted">Respostas abaixo deste valor = <span class="text-success fw-bold">Online</span></small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><i class="ti ti-alert-triangle me-1 text-warning"></i> Tempo "Lento" (ms)</label>
+                            <input type="number" name="tempo_lento_ms" class="form-control" value="5000" min="500" step="100" placeholder="5000">
+                            <small class="text-muted">Respostas acima deste valor = <span class="text-danger fw-bold">Offline</span></small>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="row">
