@@ -199,12 +199,19 @@ try {
                 }],
                 colors: [isDark ? '#206bc4' : '#206bc4'],
                 tooltip: {
-                    fixed: { enabled: false },
-                    x: { show: false },
-                    y: {
-                        title: { formatter: () => 'Resposta: ' }
+                    theme: isDark ? 'dark' : 'light',
+                    x: {
+                        show: true,
+                        format: 'dd/MM HH:mm:ss'
                     },
-                    marker: { show: false }
+                    y: {
+                        title: { formatter: () => 'Resposta: ' },
+                        formatter: (val) => val + ' ms'
+                    },
+                    marker: { show: true }
+                },
+                xaxis: {
+                    type: 'datetime'
                 }
             };
 
