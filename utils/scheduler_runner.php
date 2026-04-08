@@ -20,12 +20,12 @@ function runScheduler($pdo) {
         $script = __DIR__ . '/../' . $tarefa['script_path'];
 
         if (file_exists($script)) {
-            // Executa o script capturando o output
+            // Executa o script capturando o output para o log, mas sem exibir na tela
             ob_start();
             try {
                 include $script;
                 $output = ob_get_clean();
-                $status_log = "Sucesso: " . substr($output, 0, 500);
+                $status_log = "Sucesso: " . substr(strip_tags((string)$output), 0, 500);
             } catch (Exception $e) {
                 ob_end_clean();
                 $status_log = "Erro: " . $e->getMessage();
