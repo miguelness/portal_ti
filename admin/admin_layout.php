@@ -230,6 +230,11 @@ if (!isset($user_accesses)) {
                                     <a class="dropdown-item" href="accesses_admin.php">Acessos</a>
                                     <a class="dropdown-item" href="alerts_admin.php">Alertas</a>
                                     <?php endif; ?>
+                                    <?php if (hasAccess('Super Administrador', $user_accesses)): ?>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="servidores_admin.php">Monitorar Servidores</a>
+                                    <a class="dropdown-item" href="../status_servidores.php" target="_blank">Status dos Sistemas</a>
+                                    <?php endif; ?>
                                 </div>
                             </li>
                             <?php endif; ?>
