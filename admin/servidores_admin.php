@@ -27,12 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         if ($action === 'create') {
-            $stmt = $pdo->prepare("INSERT INTO monitoramento_servidores (nome, ip_ou_url, tipo, verificar_estabilidade, tempo_bom_ms, tempo_lento_ms) VALUES (:nome, :ip_ou_url, :tipo, :verificar, :tempo_bom, :tempo_lento)");
+            $stmt = $pdo->prepare("INSERT INTO monitoramento_servidores (nome, ip_ou_url, tipo, verificar_estabilidade, exibir_dashboard, tempo_bom_ms, tempo_lento_ms) VALUES (:nome, :ip_ou_url, :tipo, :verificar, :exibir, :tempo_bom, :tempo_lento)");
             $stmt->execute([
                 ':nome'      => $_POST['nome'] ?? '',
                 ':ip_ou_url' => trim($_POST['ip_ou_url']),
                 ':tipo'      => $_POST['tipo'] ?? 'externo',
                 ':verificar' => (int)($_POST['verificar_estabilidade'] ?? 1),
+                ':exibir'    => (int)($_POST['exibir_dashboard'] ?? 0),
                 ':tempo_bom' => (int)($_POST['tempo_bom_ms'] ?: 1500),
                 ':tempo_lento' => (int)($_POST['tempo_lento_ms'] ?: 3500)
             ]);
@@ -40,12 +41,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } elseif ($action === 'update') {
             $id = (int)$_POST['id'];
-            $stmt = $pdo->prepare("UPDATE monitoramento_servidores SET nome = :nome, ip_ou_url = :ip_ou_url, tipo = :tipo, verificar_estabilidade = :verificar, tempo_bom_ms = :tempo_bom, tempo_lento_ms = :tempo_lento WHERE id = :id");
+            $stmt = $pdo->prepare("UPDATE monitoramento_servidores SET nome = :nome, ip_ou_url = :ip_ou_url, tipo = :tipo, verificar_estabilidade = :verificar, exibir_dashboard = :exibir, tempo_bom_ms = :tempo_bom, tempo_lento_ms = :tempo_lento WHERE id = :id");
             $stmt->execute([
                 ':nome'      => $_POST['nome'] ?? '',
                 ':ip_ou_url' => trim($_POST['ip_ou_url']),
                 ':tipo'      => $_POST['tipo'] ?? 'externo',
                 ':verificar' => (int)($_POST['verificar_estabilidade'] ?? 1),
+                ':exibir'    => (int)($_POST['exibir_dashboard'] ?? 0),
                 ':tempo_bom' => (int)($_POST['tempo_bom_ms'] ?: 1500),
                 ':tempo_lento' => (int)($_POST['tempo_lento_ms'] ?: 3500),
                 ':id'        => $id
@@ -204,6 +206,15 @@ ob_start();
                     </div>
                 </div>
 
+                <div class="mb-3">
+                    <label class="form-label">Exibir no Dashboard Principal?</label>
+                    <select name="exibir_dashboard" id="servExibir" class="form-select">
+                        <option value="0">Não (Oculto)</option>
+                        <option value="1">Sim (Versão Compacta)</option>
+                    </select>
+                    <small class="text-muted">Aparecerá logo abaixo do título "Ferramentas Corporativas" na home.</small>
+                </div>
+
                 <div class="row">
                     <div class="col-6 mb-3">
                         <label class="form-label">Tempo Bom (ms)</label>
@@ -232,6 +243,7 @@ function openAddModal() {
     document.getElementById('servIpUrl').value = '';
     document.getElementById('servTipo').value = 'externo';
     document.getElementById('servVerificar').value = '1';
+    document.getElementById('servExibir').value = '0';
     document.getElementById('servTempoBom').value = '1500';
     document.getElementById('servTempoLento').value = '3500';
     new bootstrap.Modal(document.getElementById('servidorModal')).show();
@@ -245,6 +257,7 @@ function editServidor(data) {
     document.getElementById('servIpUrl').value = data.ip_ou_url;
     document.getElementById('servTipo').value = data.tipo;
     document.getElementById('servVerificar').value = data.verificar_estabilidade;
+    document.getElementById('servExibir').value = data.exibir_dashboard;
     document.getElementById('servTempoBom').value = data.tempo_bom_ms;
     document.getElementById('servTempoLento').value = data.tempo_lento_ms;
     new bootstrap.Modal(document.getElementById('servidorModal')).show();
