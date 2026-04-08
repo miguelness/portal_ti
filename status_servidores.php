@@ -40,21 +40,81 @@ try {
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta19/dist/css/tabler.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
   <style>
-    body { background: #f4f6fa; }
-    [data-bs-theme="dark"] body { background: #0d0e12; }
-    .status-card { border-radius: 12px; transition: transform 0.2s; }
-    .status-card:hover { transform: translateY(-3px); }
-    .pulse-online { color: #2fb344; animation: pulse-green 2s infinite; }
-    .pulse-offline { color: #d63939; animation: pulse-red 2s infinite; }
-    @keyframes pulse-green { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap');
+
+    :root {
+        --tblr-font-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
+    }
+    
+    body { 
+        background-color: #f8fafc; 
+        font-family: 'Inter', sans-serif;
+        color: #0f172a;
+        background-image: radial-gradient(at 0% 0%, hsla(217,100%,94%,0.8) 0, transparent 50%), 
+                          radial-gradient(at 50% 0%, hsla(213,100%,96%,0.8) 0, transparent 50%), 
+                          radial-gradient(at 100% 0%, hsla(210,100%,95%,0.8) 0, transparent 50%);
+        background-attachment: fixed;
+    }
+    [data-bs-theme="dark"] body { 
+        background-color: #0b0f19; 
+        color: #f8fafc;
+        background-image: radial-gradient(at 0% 0%, hsla(217,50%,15%,0.8) 0, transparent 50%), 
+                          radial-gradient(at 100% 0%, hsla(210,40%,12%,0.8) 0, transparent 50%);
+    }
+
+    h1, h2, h3, h4, h5, h6, .page-title {
+        font-family: 'Outfit', sans-serif;
+        letter-spacing: -0.02em;
+    }
+
+    .status-card { 
+        border-radius: 16px; 
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+    [data-bs-theme="dark"] .status-card {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4);
+    }
+    .status-card:hover { 
+        transform: translateY(-5px); 
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    }
+
+    .pulse-online { color: #10b981; filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.5)); animation: pulse-green 2.5s infinite; }
+    .pulse-offline { color: #ef4444; filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.5)); animation: pulse-red 2.5s infinite; }
+    .pulse-lento { color: #f59e0b; filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.5)); }
+
+    @keyframes pulse-green { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
     @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     
+    .avatar {
+        border-radius: 12px;
+        background: rgba(32,107,196,0.1) !important;
+        color: #206bc4 !important;
+    }
+    [data-bs-theme="dark"] .avatar {
+        background: rgba(32,107,196,0.2) !important;
+        color: #74a8f6 !important;
+    }
+
     .chart-container {
         height: 60px;
         margin-top: 15px;
         margin-bottom: -10px;
         width: 100%;
+        position: relative;
+        z-index: 1;
     }
+    
+    .navbar { background: transparent !important; border-bottom: none !important; }
+    .page-header { margin-bottom: 2rem; position: relative; z-index: 10; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
@@ -67,8 +127,14 @@ try {
             <img src="assets/logo/logo-cores.png" height="30" alt="Grupo Barão" class="navbar-brand-image">
           </a>
         </h1>
-        <div class="navbar-nav flex-row order-md-last">
-          <a href="index-tabler-modern.php" class="btn btn-outline-primary btn-sm rounded-pill">
+        <div class="navbar-nav flex-row order-md-last align-items-center">
+          <a href="#" class="nav-link px-0 hide-theme-dark me-3" id="btn-theme-dark" title="Habilitar modo escuro" data-bs-toggle="tooltip">
+            <i class="ti ti-moon fs-2"></i>
+          </a>
+          <a href="#" class="nav-link px-0 hide-theme-light me-3 d-none" id="btn-theme-light" title="Habilitar modo claro" data-bs-toggle="tooltip">
+            <i class="ti ti-sun fs-2"></i>
+          </a>
+          <a href="index-tabler-modern.php" class="btn btn-outline-primary shadow-sm rounded-pill font-weight-medium">
             <i class="ti ti-arrow-left me-1"></i> Voltar ao Portal
           </a>
         </div>
@@ -144,7 +210,7 @@ try {
             </div>
           <?php endif; ?>
 
-          <div class="alert alert-info mt-5 border-0 shadow-sm">
+          <div class="alert alert-info mt-5 shadow-sm" style="border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); background: rgba(32,107,196,0.05); backdrop-filter: blur(5px);">
             <div class="d-flex">
               <div><i class="ti ti-info-circle me-2 icon"></i></div>
               <div>
@@ -167,6 +233,37 @@ try {
   <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta19/dist/js/tabler.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
+        // Theme Toggle Logic
+        const themeStorageKey = 'portalTheme';
+        const isDarkStored = localStorage.getItem(themeStorageKey) === 'dark';
+        
+        function applyTheme(isDark) {
+            if (isDark) {
+                document.documentElement.setAttribute('data-bs-theme', 'dark');
+                document.getElementById('btn-theme-dark').classList.add('d-none');
+                document.getElementById('btn-theme-light').classList.remove('d-none');
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+                document.getElementById('btn-theme-light').classList.add('d-none');
+                document.getElementById('btn-theme-dark').classList.remove('d-none');
+            }
+        }
+        
+        applyTheme(isDarkStored);
+
+        document.getElementById('btn-theme-dark').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.setItem(themeStorageKey, 'dark');
+            applyTheme(true);
+            setTimeout(() => window.location.reload(), 100); // Reload para aplicar cor nova no chart
+        });
+        document.getElementById('btn-theme-light').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.setItem(themeStorageKey, 'light');
+            applyTheme(false);
+            setTimeout(() => window.location.reload(), 100);
+        });
+
         const logsData = <?= json_encode($logs24h) ?>;
         const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
         
