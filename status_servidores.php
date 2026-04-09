@@ -11,12 +11,12 @@ $servidores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Agrupar por tipo
 $grupos = [
-    'Interno' => [],
-    'Externo' => []
+    'Sistemas e Links Próprios' => [],
+    'Serviços de Terceiros e Parceiros' => []
 ];
 foreach ($servidores as $s) {
-    if ($s['tipo'] === 'interno') $grupos['Interno'][] = $s;
-    else $grupos['Externo'][] = $s;
+    if ($s['tipo'] === 'interno') $grupos['Sistemas e Links Próprios'][] = $s;
+    else $grupos['Serviços de Terceiros e Parceiros'][] = $s;
 }
 
 // Buscar logs das últimas 24 horas para os gráficos

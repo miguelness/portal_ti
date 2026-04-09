@@ -195,11 +195,12 @@ ob_start();
 
                 <div class="row">
                     <div class="col-6 mb-3">
-                        <label class="form-label">Tipo</label>
+                        <label class="form-label">Classificação do Recurso</label>
                         <select name="tipo" id="servTipo" class="form-select">
-                            <option value="externo">Externo (Público)</option>
-                            <option value="interno">Interno (Rede)</option>
+                            <option value="interno">Sistemas e Links Próprios (Contratados)</option>
+                            <option value="externo">Serviços Externos / Terceiros (Google, Parceiros, etc)</option>
                         </select>
+                        <small class="text-muted">Define se é um recurso gerenciado pela empresa ou um serviço externo.</small>
                     </div>
                     <div class="col-6 mb-3">
                         <label class="form-label">Monitoramento Ativo?</label>
