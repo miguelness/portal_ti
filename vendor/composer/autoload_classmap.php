@@ -6,10 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-<<<<<<< HEAD
-=======
     'Attribute' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
     'Cake\\Chronos\\Chronos' => $vendorDir . '/cakephp/chronos/src/Chronos.php',
     'Cake\\Chronos\\ChronosDate' => $vendorDir . '/cakephp/chronos/src/ChronosDate.php',
     'Cake\\Chronos\\ChronosDatePeriod' => $vendorDir . '/cakephp/chronos/src/ChronosDatePeriod.php',
@@ -1146,14 +1143,11 @@ return array(
     'PhpOffice\\PhpSpreadsheet\\Writer\\ZipStream0' => $vendorDir . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/ZipStream0.php',
     'PhpOffice\\PhpSpreadsheet\\Writer\\ZipStream2' => $vendorDir . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/ZipStream2.php',
     'PhpOffice\\PhpSpreadsheet\\Writer\\ZipStream3' => $vendorDir . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/ZipStream3.php',
-<<<<<<< HEAD
-=======
     'PhpOption\\LazyOption' => $vendorDir . '/phpoption/phpoption/src/PhpOption/LazyOption.php',
     'PhpOption\\None' => $vendorDir . '/phpoption/phpoption/src/PhpOption/None.php',
     'PhpOption\\Option' => $vendorDir . '/phpoption/phpoption/src/PhpOption/Option.php',
     'PhpOption\\Some' => $vendorDir . '/phpoption/phpoption/src/PhpOption/Some.php',
     'PhpToken' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
     'Psr\\Clock\\ClockInterface' => $vendorDir . '/psr/clock/src/ClockInterface.php',
     'Psr\\Container\\ContainerExceptionInterface' => $vendorDir . '/psr/container/src/ContainerExceptionInterface.php',
     'Psr\\Container\\ContainerInterface' => $vendorDir . '/psr/container/src/ContainerInterface.php',
@@ -1189,10 +1183,7 @@ return array(
     'Psr\\SimpleCache\\CacheException' => $vendorDir . '/psr/simple-cache/src/CacheException.php',
     'Psr\\SimpleCache\\CacheInterface' => $vendorDir . '/psr/simple-cache/src/CacheInterface.php',
     'Psr\\SimpleCache\\InvalidArgumentException' => $vendorDir . '/psr/simple-cache/src/InvalidArgumentException.php',
-<<<<<<< HEAD
-=======
     'Stringable' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
     'Symfony\\Component\\Config\\Builder\\ClassBuilder' => $vendorDir . '/symfony/config/Builder/ClassBuilder.php',
     'Symfony\\Component\\Config\\Builder\\ConfigBuilderGenerator' => $vendorDir . '/symfony/config/Builder/ConfigBuilderGenerator.php',
     'Symfony\\Component\\Config\\Builder\\ConfigBuilderGeneratorInterface' => $vendorDir . '/symfony/config/Builder/ConfigBuilderGeneratorInterface.php',
@@ -1452,13 +1443,10 @@ return array(
     'Symfony\\Polyfill\\Intl\\Grapheme\\Grapheme' => $vendorDir . '/symfony/polyfill-intl-grapheme/Grapheme.php',
     'Symfony\\Polyfill\\Intl\\Normalizer\\Normalizer' => $vendorDir . '/symfony/polyfill-intl-normalizer/Normalizer.php',
     'Symfony\\Polyfill\\Mbstring\\Mbstring' => $vendorDir . '/symfony/polyfill-mbstring/Mbstring.php',
-<<<<<<< HEAD
-=======
     'Symfony\\Polyfill\\Php80\\Php80' => $vendorDir . '/symfony/polyfill-php80/Php80.php',
     'Symfony\\Polyfill\\Php80\\PhpToken' => $vendorDir . '/symfony/polyfill-php80/PhpToken.php',
     'UnhandledMatchError' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
     'ValueError' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
     'ZipStream\\CentralDirectoryFileHeader' => $vendorDir . '/maennchen/zipstream-php/src/CentralDirectoryFileHeader.php',
     'ZipStream\\CompressionMethod' => $vendorDir . '/maennchen/zipstream-php/src/CompressionMethod.php',
     'ZipStream\\DataDescriptor' => $vendorDir . '/maennchen/zipstream-php/src/DataDescriptor.php',

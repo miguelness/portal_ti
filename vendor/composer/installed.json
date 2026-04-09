@@ -486,8 +486,6 @@
             "install-path": "../ezyang/htmlpurifier"
         },
         {
-<<<<<<< HEAD
-=======
             "name": "graham-campbell/result-type",
             "version": "v1.1.4",
             "version_normalized": "1.1.4.0",
@@ -553,7 +551,6 @@
             "install-path": "../graham-campbell/result-type"
         },
         {
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
             "name": "league/container",
             "version": "5.2.0",
             "version_normalized": "5.2.0.0",
@@ -1028,8 +1025,6 @@
             "install-path": "../phpoffice/phpspreadsheet"
         },
         {
-<<<<<<< HEAD
-=======
             "name": "phpoption/phpoption",
             "version": "1.9.5",
             "version_normalized": "1.9.5.0",
@@ -1108,7 +1103,6 @@
             "install-path": "../phpoption/phpoption"
         },
         {
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
             "name": "psr/clock",
             "version": "1.0.0",
             "version_normalized": "1.0.0.0",
@@ -2308,8 +2302,6 @@
             "install-path": "../symfony/polyfill-mbstring"
         },
         {
-<<<<<<< HEAD
-=======
             "name": "symfony/polyfill-php80",
             "version": "v1.33.0",
             "version_normalized": "1.33.0.0",
@@ -2397,7 +2389,6 @@
             "install-path": "../symfony/polyfill-php80"
         },
         {
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
             "name": "symfony/service-contracts",
             "version": "v3.6.1",
             "version_normalized": "3.6.1.0",
@@ -2580,8 +2571,6 @@
                 }
             ],
             "install-path": "../symfony/string"
-<<<<<<< HEAD
-=======
         },
         {
             "name": "vlucas/phpdotenv",
@@ -2669,7 +2658,6 @@
                 }
             ],
             "install-path": "../vlucas/phpdotenv"
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
         }
     ],
     "dev": true,

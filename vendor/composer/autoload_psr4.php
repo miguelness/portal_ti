@@ -7,10 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'ZipStream\\' => array($vendorDir . '/maennchen/zipstream-php/src'),
-<<<<<<< HEAD
-=======
     'Symfony\\Polyfill\\Php80\\' => array($vendorDir . '/symfony/polyfill-php80'),
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
     'Symfony\\Polyfill\\Intl\\Normalizer\\' => array($vendorDir . '/symfony/polyfill-intl-normalizer'),
     'Symfony\\Polyfill\\Intl\\Grapheme\\' => array($vendorDir . '/symfony/polyfill-intl-grapheme'),
@@ -27,20 +24,14 @@ return array(
     'Psr\\EventDispatcher\\' => array($vendorDir . '/psr/event-dispatcher/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'Psr\\Clock\\' => array($vendorDir . '/psr/clock/src'),
-<<<<<<< HEAD
-=======
     'PhpOption\\' => array($vendorDir . '/phpoption/phpoption/src/PhpOption'),
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
     'PhpOffice\\PhpSpreadsheet\\' => array($vendorDir . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet'),
     'Phinx\\' => array($vendorDir . '/robmorgan/phinx/src/Phinx'),
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
     'Matrix\\' => array($vendorDir . '/markbaker/matrix/classes/src'),
     'League\\Container\\' => array($vendorDir . '/league/container/src'),
-<<<<<<< HEAD
-=======
     'GrahamCampbell\\ResultType\\' => array($vendorDir . '/graham-campbell/result-type/src'),
     'Dotenv\\' => array($vendorDir . '/vlucas/phpdotenv/src'),
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
     'Composer\\Pcre\\' => array($vendorDir . '/composer/pcre/src'),
     'Complex\\' => array($vendorDir . '/markbaker/complex/classes/src'),
     'Cake\\Utility\\' => array($vendorDir . '/cakephp/utility'),

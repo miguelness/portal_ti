@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitf2340a24214e76f423fc97995be2dcea
+class ComposerStaticInit5e111ce8030cc10cb1fe5c721696783c
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -26,10 +26,7 @@ class ComposerStaticInitf2340a24214e76f423fc97995be2dcea
         ),
         'S' => 
         array (
-<<<<<<< HEAD
-=======
             'Symfony\\Polyfill\\Php80\\' => 23,
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Intl\\Normalizer\\' => 33,
             'Symfony\\Polyfill\\Intl\\Grapheme\\' => 31,
@@ -49,10 +46,7 @@ class ComposerStaticInitf2340a24214e76f423fc97995be2dcea
             'Psr\\EventDispatcher\\' => 20,
             'Psr\\Container\\' => 14,
             'Psr\\Clock\\' => 10,
-<<<<<<< HEAD
-=======
             'PhpOption\\' => 10,
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
             'PhpOffice\\PhpSpreadsheet\\' => 25,
             'Phinx\\' => 6,
             'PHPMailer\\PHPMailer\\' => 20,
@@ -65,8 +59,6 @@ class ComposerStaticInitf2340a24214e76f423fc97995be2dcea
         array (
             'League\\Container\\' => 17,
         ),
-<<<<<<< HEAD
-=======
         'G' => 
         array (
             'GrahamCampbell\\ResultType\\' => 26,
@@ -75,7 +67,6 @@ class ComposerStaticInitf2340a24214e76f423fc97995be2dcea
         array (
             'Dotenv\\' => 7,
         ),
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
         'C' => 
         array (
             'Composer\\Pcre\\' => 14,
@@ -97,13 +88,10 @@ class ComposerStaticInitf2340a24214e76f423fc97995be2dcea
         array (
             0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
         ),
-<<<<<<< HEAD
-=======
         'Symfony\\Polyfill\\Php80\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
         ),
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
@@ -169,13 +157,10 @@ class ComposerStaticInitf2340a24214e76f423fc97995be2dcea
         array (
             0 => __DIR__ . '/..' . '/psr/clock/src',
         ),
-<<<<<<< HEAD
-=======
         'PhpOption\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption',
         ),
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
         'PhpOffice\\PhpSpreadsheet\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
@@ -196,8 +181,6 @@ class ComposerStaticInitf2340a24214e76f423fc97995be2dcea
         array (
             0 => __DIR__ . '/..' . '/league/container/src',
         ),
-<<<<<<< HEAD
-=======
         'GrahamCampbell\\ResultType\\' => 
         array (
             0 => __DIR__ . '/..' . '/graham-campbell/result-type/src',
@@ -206,7 +189,6 @@ class ComposerStaticInitf2340a24214e76f423fc97995be2dcea
         array (
             0 => __DIR__ . '/..' . '/vlucas/phpdotenv/src',
         ),
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
         'Composer\\Pcre\\' => 
         array (
             0 => __DIR__ . '/..' . '/composer/pcre/src',
@@ -252,10 +234,7 @@ class ComposerStaticInitf2340a24214e76f423fc97995be2dcea
     );
 
     public static $classMap = array (
-<<<<<<< HEAD
-=======
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
         'Cake\\Chronos\\Chronos' => __DIR__ . '/..' . '/cakephp/chronos/src/Chronos.php',
         'Cake\\Chronos\\ChronosDate' => __DIR__ . '/..' . '/cakephp/chronos/src/ChronosDate.php',
         'Cake\\Chronos\\ChronosDatePeriod' => __DIR__ . '/..' . '/cakephp/chronos/src/ChronosDatePeriod.php',
@@ -1392,14 +1371,11 @@ class ComposerStaticInitf2340a24214e76f423fc97995be2dcea
         'PhpOffice\\PhpSpreadsheet\\Writer\\ZipStream0' => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/ZipStream0.php',
         'PhpOffice\\PhpSpreadsheet\\Writer\\ZipStream2' => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/ZipStream2.php',
         'PhpOffice\\PhpSpreadsheet\\Writer\\ZipStream3' => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Writer/ZipStream3.php',
-<<<<<<< HEAD
-=======
         'PhpOption\\LazyOption' => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption/LazyOption.php',
         'PhpOption\\None' => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption/None.php',
         'PhpOption\\Option' => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption/Option.php',
         'PhpOption\\Some' => __DIR__ . '/..' . '/phpoption/phpoption/src/PhpOption/Some.php',
         'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
         'Psr\\Clock\\ClockInterface' => __DIR__ . '/..' . '/psr/clock/src/ClockInterface.php',
         'Psr\\Container\\ContainerExceptionInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerExceptionInterface.php',
         'Psr\\Container\\ContainerInterface' => __DIR__ . '/..' . '/psr/container/src/ContainerInterface.php',
@@ -1435,10 +1411,7 @@ class ComposerStaticInitf2340a24214e76f423fc97995be2dcea
         'Psr\\SimpleCache\\CacheException' => __DIR__ . '/..' . '/psr/simple-cache/src/CacheException.php',
         'Psr\\SimpleCache\\CacheInterface' => __DIR__ . '/..' . '/psr/simple-cache/src/CacheInterface.php',
         'Psr\\SimpleCache\\InvalidArgumentException' => __DIR__ . '/..' . '/psr/simple-cache/src/InvalidArgumentException.php',
-<<<<<<< HEAD
-=======
         'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
         'Symfony\\Component\\Config\\Builder\\ClassBuilder' => __DIR__ . '/..' . '/symfony/config/Builder/ClassBuilder.php',
         'Symfony\\Component\\Config\\Builder\\ConfigBuilderGenerator' => __DIR__ . '/..' . '/symfony/config/Builder/ConfigBuilderGenerator.php',
         'Symfony\\Component\\Config\\Builder\\ConfigBuilderGeneratorInterface' => __DIR__ . '/..' . '/symfony/config/Builder/ConfigBuilderGeneratorInterface.php',
@@ -1698,13 +1671,10 @@ class ComposerStaticInitf2340a24214e76f423fc97995be2dcea
         'Symfony\\Polyfill\\Intl\\Grapheme\\Grapheme' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/Grapheme.php',
         'Symfony\\Polyfill\\Intl\\Normalizer\\Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Normalizer.php',
         'Symfony\\Polyfill\\Mbstring\\Mbstring' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/Mbstring.php',
-<<<<<<< HEAD
-=======
         'Symfony\\Polyfill\\Php80\\Php80' => __DIR__ . '/..' . '/symfony/polyfill-php80/Php80.php',
         'Symfony\\Polyfill\\Php80\\PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/PhpToken.php',
         'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
         'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
         'ZipStream\\CentralDirectoryFileHeader' => __DIR__ . '/..' . '/maennchen/zipstream-php/src/CentralDirectoryFileHeader.php',
         'ZipStream\\CompressionMethod' => __DIR__ . '/..' . '/maennchen/zipstream-php/src/CompressionMethod.php',
         'ZipStream\\DataDescriptor' => __DIR__ . '/..' . '/maennchen/zipstream-php/src/DataDescriptor.php',
@@ -1737,10 +1707,10 @@ class ComposerStaticInitf2340a24214e76f423fc97995be2dcea
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitf2340a24214e76f423fc97995be2dcea::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitf2340a24214e76f423fc97995be2dcea::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitf2340a24214e76f423fc97995be2dcea::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitf2340a24214e76f423fc97995be2dcea::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit5e111ce8030cc10cb1fe5c721696783c::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit5e111ce8030cc10cb1fe5c721696783c::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit5e111ce8030cc10cb1fe5c721696783c::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit5e111ce8030cc10cb1fe5c721696783c::$classMap;
 
         }, null, ClassLoader::class);
     }

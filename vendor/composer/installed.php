@@ -3,11 +3,7 @@
         'name' => 'grupo-barao/portal',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-<<<<<<< HEAD
-        'reference' => 'ab05b9833cdbe1bf4e85156a45a9022185bdeb46',
-=======
-        'reference' => '26c70c628d4f6504f264f8899894c1aca4fd3284',
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
+        'reference' => 'cc821b9b4a83f99d8e46f2006bc2e9090bac8fa8',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -89,11 +85,7 @@
         'grupo-barao/portal' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-<<<<<<< HEAD
-            'reference' => 'ab05b9833cdbe1bf4e85156a45a9022185bdeb46',
-=======
-            'reference' => '26c70c628d4f6504f264f8899894c1aca4fd3284',
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
+            'reference' => 'cc821b9b4a83f99d8e46f2006bc2e9090bac8fa8',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -159,8 +151,6 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-<<<<<<< HEAD
-=======
         'phpoption/phpoption' => array(
             'pretty_version' => '1.9.5',
             'version' => '1.9.5.0',
@@ -170,7 +160,6 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
         'psr/clock' => array(
             'pretty_version' => '1.0.0',
             'version' => '1.0.0.0',
@@ -343,8 +332,6 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-<<<<<<< HEAD
-=======
         'symfony/polyfill-php80' => array(
             'pretty_version' => 'v1.33.0',
             'version' => '1.33.0.0',
@@ -354,7 +341,6 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
         'symfony/service-contracts' => array(
             'pretty_version' => 'v3.6.1',
             'version' => '3.6.1.0',
@@ -373,8 +359,6 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-<<<<<<< HEAD
-=======
         'vlucas/phpdotenv' => array(
             'pretty_version' => 'v5.6.3',
             'version' => '5.6.3.0',
@@ -384,6 +368,5 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
->>>>>>> bed8110bfb72c41715bb74687f91056e707f9278
     ),
 );
