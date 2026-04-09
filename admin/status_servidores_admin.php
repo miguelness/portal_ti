@@ -10,7 +10,7 @@ require_once 'check_access.php';
 require_once 'config.php';
 
 // Query sem o filtro is_public = 1
-$stmt = $pdo->query("SELECT * FROM monitoramento_servidores WHERE verificar_estabilidade = 1 ORDER BY tipo DESC, nome ASC");
+$stmt = $pdo->query("SELECT * FROM monitoramento_servidores WHERE verificar_estabilidade = 1 ORDER BY ordem ASC, nome ASC");
 $servidores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Agrupar por tipo

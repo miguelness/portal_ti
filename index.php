@@ -172,7 +172,7 @@ $tablerColors = [
 // Consulta servidores para monitoramento compacto
 $serversMonitor = [];
 try {
-    $stmtSrv = $pdo->query("SELECT nome, status, tempo_resposta_ms FROM monitoramento_servidores WHERE exibir_topo = 1 AND status_registro = 'ativo' ORDER BY nome ASC");
+    $stmtSrv = $pdo->query("SELECT nome, status, tempo_resposta_ms FROM monitoramento_servidores WHERE exibir_topo = 1 AND status_registro = 'ativo' ORDER BY ordem ASC, nome ASC");
     $serversMonitor = $stmtSrv->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     // Tabela pode não existir ainda ou erro na query

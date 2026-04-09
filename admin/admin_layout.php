@@ -381,5 +381,42 @@ if (!isset($user_accesses)) {
     </script>
     
     <?= $extraJS ?? '' ?>
+    <!-- SortableJS -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const el = document.querySelector('#servidores-table tbody');
+        if (el) {
+            Sortable.create(el, {
+                handle: '.handle',
+                animation: 150,
+                onEnd: function () {
+                    const order = [];
+                    el.querySelectorAll('tr').forEach(tr => {
+                        if (tr.dataset.id) order.push(tr.dataset.id);
+                    });
+
+                    // Salva a nova ordem via POST
+                    const formData = new FormData();
+                    formData.append('action', 'save_order');
+                    order.forEach(id => formData.append('order[]', id));
+
+                    fetch('servidores_admin.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Opcional: mostrar toast de sucesso
+                            console.log('Ordem salva com sucesso');
+                        }
+                    })
+                    .catch(err => console.error('Erro ao salvar ordem:', err));
+                }
+            });
+        }
+    });
+    </script>
 </body>
 </html>

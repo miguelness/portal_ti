@@ -6,7 +6,7 @@
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once 'admin/config.php';
 
-$stmt = $pdo->query("SELECT * FROM monitoramento_servidores WHERE verificar_estabilidade = 1 AND is_public = 1 ORDER BY tipo DESC, nome ASC");
+$stmt = $pdo->query("SELECT * FROM monitoramento_servidores WHERE verificar_estabilidade = 1 AND is_public = 1 ORDER BY ordem ASC, nome ASC");
 $servidores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Agrupar por tipo
