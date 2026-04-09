@@ -319,8 +319,20 @@ try {
                 fill: { type: 'gradient', gradient: { opacityFrom: 0.3, opacityTo: 0.1 } },
                 series: [{ name: 'Resposta (ms)', data: logsData[sid] }],
                 colors: ['#206bc4'],
-                tooltip: { theme: isDark ? 'dark' : 'light', x: { format: 'HH:mm' } },
-                xaxis: { type: 'datetime' }
+                tooltip: { 
+                    theme: isDark ? 'dark' : 'light', 
+                    x: { 
+                        show: true,
+                        format: 'dd/MM HH:mm' 
+                    } 
+                },
+                xaxis: { 
+                    type: 'datetime',
+                    labels: {
+                        datetimeUTC: false,
+                        format: 'dd/MM HH:mm'
+                    }
+                }
             };
             charts[sid] = new ApexCharts(container, options);
             charts[sid].render();
