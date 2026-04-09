@@ -325,7 +325,10 @@ try {
                     marker: { show: true }
                 },
                 xaxis: {
-                    type: 'datetime'
+                    type: 'datetime',
+                    labels: {
+                        datetimeUTC: false
+                    }
                 }
             };
 
