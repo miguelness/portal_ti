@@ -221,12 +221,12 @@ ob_start();
 
                 <div class="row">
                     <div class="col-6 mb-3">
-                        <label class="form-label">Disponível ao Público?</label>
+                        <label class="form-label">Visibilidade</label>
                         <select name="is_public" id="servPublic" class="form-select">
-                            <option value="0">Não (Somente TI/Admin)</option>
-                            <option value="1">Sim (Todos Colaboradores)</option>
+                            <option value="0">Uso Interno TI (Oculto no Portal)</option>
+                            <option value="1">Compartilhado no Portal (Visível a todos)</option>
                         </select>
-                        <small class="text-muted">Exibido na tela de status pública.</small>
+                        <small class="text-muted">Define se o status será compartilhado publicamente ou mantido apenas para monitoramento técnico.</small>
                     </div>
                     <div class="col-6 mb-3">
                         <label class="form-label">Exibir no Topo da Index?</label>

@@ -213,7 +213,7 @@ try {
                         <div class="text-truncate">
                           <div class="font-weight-bold text-truncate" title="<?= htmlspecialchars($s['nome']) ?>"><?= htmlspecialchars($s['nome']) ?></div>
                           <div class="text-muted small">
-                             <?= $s['is_public'] ? '<span class="badge bg-green-lt">Público</span>' : '<span class="badge bg-red-lt">Privado</span>' ?>
+                             <?= $s['is_public'] ? '<span class="badge bg-green-lt">Compartilhado</span>' : '<span class="badge bg-blue-lt">Uso Interno TI</span>' ?>
                           </div>
                         </div>
                       </div>

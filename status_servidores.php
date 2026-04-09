@@ -1,7 +1,7 @@
 <?php
 /**
  * status_servidores.php
- * Tela de visualização pública/colaborador do status dos sistemas e servidores.
+ * Tela de visualização dos serviços compartilhados pela TI.
  */
 if (session_status() === PHP_SESSION_NONE) session_start();
 require_once 'admin/config.php';
@@ -264,7 +264,7 @@ try {
             <div class="empty">
               <div class="empty-icon"><i class="ti ti-mood-empty"></i></div>
               <p class="empty-title">Nenhum serviço monitorado</p>
-              <p class="empty-subtitle text-muted">A TI ainda não cadastrou sistemas para monitoramento público.</p>
+              <p class="empty-subtitle text-muted">A TI ainda não cadastrou sistemas para compartilhamento de status.</p>
             </div>
           <?php endif; ?>
 
