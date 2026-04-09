@@ -129,9 +129,10 @@ try {
     .page-header { margin-bottom: 2rem; position: relative; z-index: 10; }
 
     /* Otimizações para Fullscreen / TV Mode */
-    :-webkit-full-screen .navbar, :-webkit-full-screen .footer, :-webkit-full-screen .badge, :-webkit-full-screen .text-muted.mt-1, :-webkit-full-screen .btn-back { display: none !important; }
-    :-ms-fullscreen .navbar, :-ms-fullscreen .footer, :-ms-fullscreen .badge, :-ms-fullscreen .text-muted.mt-1, :-ms-fullscreen .btn-back { display: none !important; }
-    :fullscreen .navbar, :fullscreen .footer, :fullscreen .badge, :fullscreen .text-muted.mt-1, :fullscreen .btn-back { display: none !important; }
+    :fullscreen .footer, :fullscreen .badge, :fullscreen .text-muted.mt-1, :fullscreen .btn-back, :fullscreen .navbar-brand { display: none !important; }
+    :fullscreen .navbar { background: transparent !important; border: none !important; position: absolute; width: 100%; z-index: 10; }
+    :fullscreen .navbar-nav > *:not(#digital-clock) { display: none !important; }
+    :fullscreen .navbar-nav { margin-left: auto; }
 
     :fullscreen .page-wrapper { padding: 3rem 0; background: var(--tblr-body-bg); }
     :fullscreen .page-title { font-size: 2.5rem !important; justify-content: center; width: 100%; margin-bottom: 3rem; }
