@@ -245,9 +245,10 @@ if (!isset($user_accesses)) {
                                     <?php endif; ?>
                                     <?php if (hasAccess('Super Administrador', $user_accesses)): ?>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="servidores_admin.php">Monitorar Servidores</a>
+                                    <a class="dropdown-item" href="servidores_admin.php">Gestão de Servidores</a>
+                                    <a class="dropdown-item" href="status_servidores_admin.php" target="_blank">Monitoramento Full (TI)</a>
                                     <a class="dropdown-item" href="agendamentos_admin.php">Agendamentos (Cron)</a>
-                                    <a class="dropdown-item" href="../status_servidores.php" target="_blank">Status dos Sistemas</a>
+                                    <a class="dropdown-item" href="../status_servidores.php" target="_blank">Status Público (Site)</a>
                                     <?php endif; ?>
                                 </div>
                             </li>
