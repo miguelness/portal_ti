@@ -164,7 +164,7 @@ try {
               <p class="text-muted mt-1">Acompanhe em tempo real a disponibilidade de nossos serviços.</p>
             </div>
             <div class="col-auto">
-               <span class="badge bg-blue-lt">Atualizado em: <?= date('d/m/Y H:i') ?></span>
+               <span class="badge bg-blue-lt" id="last-update-time">Atualizado em: <?= date('d/m/Y H:i') ?></span>
             </div>
           </div>
         </div>
@@ -189,7 +189,7 @@ try {
                       </div>
                       
                       <div class="mt-3 d-flex align-items-center justify-content-between">
-                        <div>
+                        <div id="status-container-<?= $s['id'] ?>">
                           <?php if ($s['status'] === 'online'): ?>
                             <span class="text-success d-flex align-items-center"><i class="ti ti-circle-filled pulse-online me-1"></i> Operacional</span>
                           <?php elseif ($s['status'] === 'lento'): ?>
@@ -200,7 +200,7 @@ try {
                             <span class="text-muted d-flex align-items-center"><i class="ti ti-clock me-1"></i> Aguardando...</span>
                           <?php endif; ?>
                         </div>
-                        <div class="text-muted small">
+                        <div class="text-muted small" id="ms-value-<?= $s['id'] ?>">
                           <?= $s['tempo_resposta_ms'] ?>ms
                         </div>
                       </div>
@@ -281,6 +281,7 @@ try {
 
         const logsData = <?= json_encode($logs24h) ?>;
         const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+        const charts = {}; // Para armazenar instâncias e atualizar depois
         
         Object.keys(logsData).forEach(sid => {
             const container = document.getElementById(`chart-${sid}`);
@@ -290,10 +291,11 @@ try {
             
             const options = {
                 chart: {
+                    id: `chart-inst-${sid}`,
                     type: 'area',
                     height: 60,
                     sparkline: { enabled: true },
-                    animations: { enabled: false }
+                    animations: { enabled: true }
                 },
                 stroke: { curve: 'smooth', width: 2 },
                 fill: {
@@ -309,7 +311,7 @@ try {
                     name: 'Resposta (ms)',
                     data: seriesData
                 }],
-                colors: [isDark ? '#206bc4' : '#206bc4'],
+                colors: ['#206bc4'],
                 tooltip: {
                     theme: isDark ? 'dark' : 'light',
                     x: {
@@ -327,9 +329,51 @@ try {
                 }
             };
 
-            const chart = new ApexCharts(container, options);
-            chart.render();
+            charts[sid] = new ApexCharts(container, options);
+            charts[sid].render();
         });
+
+        // Função de Atualização Automática
+        function refreshStatus() {
+            fetch('api/get_server_status.php')
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        const { servidores, logs, atualizado_em } = res.data;
+                        
+                        // Atualiza o tempo do badge
+                        document.getElementById('last-update-time').innerText = 'Atualizado em: ' + atualizado_em;
+
+                        servidores.forEach(s => {
+                            // Atualiza Texto/Ícone de Status
+                            const container = document.getElementById(`status-container-${s.id}`);
+                            const msVal = document.getElementById(`ms-value-${s.id}`);
+                            
+                            if (container) {
+                                let html = '';
+                                if (s.status === 'online') html = `<span class="text-success d-flex align-items-center"><i class="ti ti-circle-filled pulse-online me-1"></i> Operacional</span>`;
+                                else if (s.status === 'lento') html = `<span class="text-warning d-flex align-items-center"><i class="ti ti-alert-triangle-filled me-1"></i> Instabilidade</span>`;
+                                else if (s.status === 'offline') html = `<span class="text-danger d-flex align-items-center"><i class="ti ti-circle-x-filled pulse-offline me-1"></i> Offline</span>`;
+                                else html = `<span class="text-muted d-flex align-items-center"><i class="ti ti-clock me-1"></i> Aguardando...</span>`;
+                                container.innerHTML = html;
+                            }
+
+                            if (msVal) msVal.innerText = s.tempo_resposta_ms + 'ms';
+
+                            // Atualiza Gráfico
+                            if (logs[s.id] && charts[s.id]) {
+                                charts[s.id].updateSeries([{
+                                    data: logs[s.id]
+                                }]);
+                            }
+                        });
+                    }
+                })
+                .catch(err => console.error('Erro no auto-refresh:', err));
+        }
+
+        // Inicia o intervalo de atualização (a cada 30 segundos)
+        setInterval(refreshStatus, 30000);
     });
   </script>
 </body>
