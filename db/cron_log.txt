@@ -25,3 +25,7 @@
 [2026-04-09 08:44:32] SUCESSO: Task 1 (Verificação de Status dos Servidores) em 0.08s
 [2026-04-09 08:50:41] SUCESSO: Task 1 (Verificação de Status dos Servidores) em 0.08s
 [2026-04-09 08:56:10] SUCESSO: Task 1 (Verificação de Status dos Servidores) em 0.02s
+[2026-04-09 09:03:04] SUCESSO: Task 1 (Verificação de Status dos Servidores) em 0.1s
+[2026-04-09 09:08:12] ERRO: Tentativa de acesso com token inválido: ''
+[2026-04-09 09:08:13] ERRO: Tentativa de acesso com token inválido: ''
+[2026-04-09 09:08:22] SUCESSO: Task 1 (Verificação de Status dos Servidores) em 0.14s

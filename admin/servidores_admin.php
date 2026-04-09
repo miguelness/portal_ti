@@ -27,11 +27,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         if ($action === 'create') {
-            $stmt = $pdo->prepare("INSERT INTO monitoramento_servidores (nome, ip_ou_url, tipo, verificar_estabilidade, exibir_dashboard, is_public, exibir_topo, tempo_bom_ms, tempo_lento_ms) VALUES (:nome, :ip_ou_url, :tipo, :verificar, :exibir, :is_public, :exibir_topo, :tempo_bom, :tempo_lento)");
+            $stmt = $pdo->prepare("INSERT INTO monitoramento_servidores (nome, ip_ou_url, tipo, categoria_propriedade, verificar_estabilidade, exibir_dashboard, is_public, exibir_topo, tempo_bom_ms, tempo_lento_ms) VALUES (:nome, :ip_ou_url, :tipo, :categoria, :verificar, :exibir, :is_public, :exibir_topo, :tempo_bom, :tempo_lento)");
             $stmt->execute([
                 ':nome'      => $_POST['nome'] ?? '',
                 ':ip_ou_url' => trim($_POST['ip_ou_url']),
                 ':tipo'      => $_POST['tipo'] ?? 'externo',
+                ':categoria' => $_POST['categoria_propriedade'] ?? 'proprio',
                 ':verificar' => (int)($_POST['verificar_estabilidade'] ?? 1),
                 ':exibir'    => (int)($_POST['exibir_dashboard'] ?? 0),
                 ':is_public' => (int)($_POST['is_public'] ?? 0),
@@ -43,11 +44,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } elseif ($action === 'update') {
             $id = (int)$_POST['id'];
-            $stmt = $pdo->prepare("UPDATE monitoramento_servidores SET nome = :nome, ip_ou_url = :ip_ou_url, tipo = :tipo, verificar_estabilidade = :verificar, exibir_dashboard = :exibir, is_public = :is_public, exibir_topo = :exibir_topo, tempo_bom_ms = :tempo_bom, tempo_lento_ms = :tempo_lento WHERE id = :id");
+            $stmt = $pdo->prepare("UPDATE monitoramento_servidores SET nome = :nome, ip_ou_url = :ip_ou_url, tipo = :tipo, categoria_propriedade = :categoria, verificar_estabilidade = :verificar, exibir_dashboard = :exibir, is_public = :is_public, exibir_topo = :exibir_topo, tempo_bom_ms = :tempo_bom, tempo_lento_ms = :tempo_lento WHERE id = :id");
             $stmt->execute([
                 ':nome'      => $_POST['nome'] ?? '',
                 ':ip_ou_url' => trim($_POST['ip_ou_url']),
                 ':tipo'      => $_POST['tipo'] ?? 'externo',
+                ':categoria' => $_POST['categoria_propriedade'] ?? 'proprio',
                 ':verificar' => (int)($_POST['verificar_estabilidade'] ?? 1),
                 ':exibir'    => (int)($_POST['exibir_dashboard'] ?? 0),
                 ':is_public' => (int)($_POST['is_public'] ?? 0),
@@ -194,13 +196,22 @@ ob_start();
                 </div>
 
                 <div class="row">
-                    <div class="col-6 mb-3">
-                        <label class="form-label">Classificação do Recurso</label>
+                    <div class="col-12 mb-3">
+                        <label class="form-label">Técnico (Acesso)</label>
                         <select name="tipo" id="servTipo" class="form-select">
-                            <option value="interno">Sistemas e Links Próprios (Contratados)</option>
-                            <option value="externo">Serviços Externos / Terceiros (Google, Parceiros, etc)</option>
+                            <option value="externo">Público (URL/Domínio)</option>
+                            <option value="interno">Interno (IP Rede)</option>
                         </select>
-                        <small class="text-muted">Define se é um recurso gerenciado pela empresa ou um serviço externo.</small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label">Propriedade</label>
+                        <select name="categoria_propriedade" id="servCategoria" class="form-select">
+                            <option value="proprio">Proprio / Contratado</option>
+                            <option value="terceiro">Terceiros / Parceiros</option>
+                        </select>
                     </div>
                     <div class="col-6 mb-3">
                         <label class="form-label">Monitoramento Ativo?</label>
@@ -227,7 +238,7 @@ ob_start();
                             <option value="0">Uso Interno TI (Oculto no Portal)</option>
                             <option value="1">Compartilhado no Portal (Visível a todos)</option>
                         </select>
-                        <small class="text-muted">Define se o status será compartilhado publicamente ou mantido apenas para monitoramento técnico.</small>
+                        <small class="text-muted">Define se o status será compartilhado publicamente.</small>
                     </div>
                     <div class="col-6 mb-3">
                         <label class="form-label">Exibir no Topo da Index?</label>
@@ -251,12 +262,13 @@ ob_start();
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-ghost-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Salvar</button>
+                <button type="button" class="btn btn-link link-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary ms-auto">Salvar</button>
             </div>
         </form>
     </div>
 </div>
+
 
 <script>
 function openAddModal() {
@@ -266,6 +278,7 @@ function openAddModal() {
     document.getElementById('servNome').value = '';
     document.getElementById('servIpUrl').value = '';
     document.getElementById('servTipo').value = 'externo';
+    document.getElementById('servCategoria').value = 'proprio';
     document.getElementById('servVerificar').value = '1';
     document.getElementById('servExibir').value = '0';
     document.getElementById('servPublic').value = '0';
@@ -282,6 +295,7 @@ function editServidor(data) {
     document.getElementById('servNome').value = data.nome;
     document.getElementById('servIpUrl').value = data.ip_ou_url;
     document.getElementById('servTipo').value = data.tipo;
+    document.getElementById('servCategoria').value = data.categoria_propriedade || 'proprio';
     document.getElementById('servVerificar').value = data.verificar_estabilidade;
     document.getElementById('servExibir').value = data.exibir_dashboard;
     document.getElementById('servPublic').value = data.is_public;

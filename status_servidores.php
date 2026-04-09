@@ -15,7 +15,7 @@ $grupos = [
     'Serviços de Terceiros e Parceiros' => []
 ];
 foreach ($servidores as $s) {
-    if ($s['tipo'] === 'interno') $grupos['Sistemas e Links Próprios'][] = $s;
+    if ($s['categoria_propriedade'] === 'proprio') $grupos['Sistemas e Links Próprios'][] = $s;
     else $grupos['Serviços de Terceiros e Parceiros'][] = $s;
 }
 
