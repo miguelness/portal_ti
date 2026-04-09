@@ -2,14 +2,23 @@
 // Desenvolvido por Miguel 🧠 - Analista de Sistemas
 // Assinatura digital: MGL-<?php echo sha1('Miguel-'.date('Y'));
 
-// Dados de conexão
-$servername = "localhost";  // geralmente localhost ou 127.0.0.1
-$username   = "root";       // usuário padrão do XAMPP
-$password   = "";           // em geral, o root do XAMPP não tem senha
-$dbname     = "portal";  // nome do banco de dados que você criou
+// Carrega o autoload se ainda não foi carregado (para compatibilidade com scripts isolados)
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+    if (file_exists(__DIR__ . '/../.env')) {
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+        $dotenv->load();
+    }
+}
 
-// Cria a conexão
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Dados de conexão via Variáveis de Ambiente
+$host = $_ENV['DB_HOST'] ?? 'localhost';
+$dbname = $_ENV['DB_NAME'] ?? 'portal';
+$username = $_ENV['DB_USER'] ?? 'root';
+$password = $_ENV['DB_PASS'] ?? '';
+
+// Cria a conexão (MySQLi)
+$conn = new mysqli($host, $username, $password, $dbname);
 
 // Verifica se ocorreu algum erro na conexão
 if ($conn->connect_errno) {

@@ -1,15 +1,16 @@
-<?php
-/**
- * Configuração do Sistema Portal
- * 
- * Este arquivo contém as configurações principais do sistema
- */
+require_once __DIR__ . '/vendor/autoload.php';
 
-// Configurações do Banco de Dados
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'portal');
+// Carrega o .env se o arquivo existir
+if (file_exists(__DIR__ . '/.env')) {
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+    $dotenv->load();
+}
+
+// Configurações do Banco de Dados via .ENV
+define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
+define('DB_USER', $_ENV['DB_USER'] ?? 'root');
+define('DB_PASS', $_ENV['DB_PASS'] ?? '');
+define('DB_NAME', $_ENV['DB_NAME'] ?? 'portal');
 
 // Configurações de Segurança
 define('SESSION_TIMEOUT', 3600); // 1 hora em segundos

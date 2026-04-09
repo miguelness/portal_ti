@@ -1,0 +1,9 @@
+.env
+vendor/
+*.log
+tmp/
+migration_error.txt
+migration_full.txt
+master_cleanup.php
+force_cleanup.php
+tmp_cleanup.php

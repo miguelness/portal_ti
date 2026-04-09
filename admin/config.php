@@ -1,26 +1,26 @@
 <?php
 // admin/config.php
-if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-    require_once __DIR__ . '/../vendor/autoload.php';
-}
+require_once __DIR__ . '/../vendor/autoload.php';
 
-// Carrega variáveis de ambiente manualmente (fallback seguro)
+// Carrega o .env se o arquivo existir
 if (file_exists(__DIR__ . '/../.env')) {
-    $lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        if (strpos(trim($line), '#') === 0) continue;
-        if (strpos($line, '=') !== false) {
-            list($name, $value) = explode('=', $line, 2);
-            $name = trim($name);
-            $value = trim($value);
-            // Remove aspas se existirem
-            $value = trim($value, '"\'');
-            $_ENV[$name] = $value;
-            putenv("$name=$value"); // Também sincroniza com getenv()
+    try {
+        $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+        $dotenv->load();
+    } catch (Exception $e) {
+        // Fallback manual se o phpdotenv falhar por algum motivo
+        $lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            if (strpos(trim($line), '#') === 0) continue;
+            if (strpos($line, '=') !== false) {
+                list($name, $value) = explode('=', $line, 2);
+                $_ENV[trim($name)] = trim(trim($value), '"\'');
+            }
         }
     }
 }
 
+// Dados de conexão via Variáveis de Ambiente
 $host = $_ENV['DB_HOST'] ?? 'localhost';
 $dbname = $_ENV['DB_NAME'] ?? 'portal';
 $username = $_ENV['DB_USER'] ?? 'root';

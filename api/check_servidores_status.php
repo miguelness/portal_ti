@@ -14,7 +14,7 @@ $servidores = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if (empty($servidores)) {
     echo "Nenhum servidor marcado para verificação.{$nl}";
-    exit;
+    return;
 }
 
 echo "=== Verificação de Status de Servidores ==={$nl}";
