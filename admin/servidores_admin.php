@@ -66,6 +66,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([':id' => $id]);
             header('Location: servidores_admin.php?success=deleted');
             exit;
+        } elseif ($action === 'save_order') {
+            $order = $_POST['order'] ?? [];
+            foreach ($order as $index => $id) {
+                $stmt = $pdo->prepare("UPDATE monitoramento_servidores SET ordem = :ordem WHERE id = :id");
+                $stmt->execute([':ordem' => $index, ':id' => (int)$id]);
+            }
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true]);
+            exit;
         }
     } catch (Exception $e) {
         header('Location: servidores_admin.php?error=' . urlencode($e->getMessage()));
@@ -73,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$servidores = $pdo->query("SELECT * FROM monitoramento_servidores ORDER BY nome ASC")->fetchAll(PDO::FETCH_ASSOC);
+$servidores = $pdo->query("SELECT * FROM monitoramento_servidores ORDER BY ordem ASC, nome ASC")->fetchAll(PDO::FETCH_ASSOC);
 
 function e($s) { return htmlspecialchars($s ?? '', ENT_QUOTES, 'UTF-8'); }
 
@@ -108,9 +117,10 @@ ob_start();
 
         <div class="card">
             <div class="table-responsive">
-                <table class="table table-vcenter table-mobile-md card-table">
+                <table class="table table-vcenter table-mobile-md card-table" id="servidores-table">
                     <thead>
                         <tr>
+                            <th class="w-1"></th>
                             <th>Nome</th>
                             <th>IP / URL</th>
                             <th>Tipo</th>
@@ -122,10 +132,13 @@ ob_start();
                     </thead>
                     <tbody>
                         <?php if (empty($servidores)): ?>
-                            <tr><td colspan="7" class="text-center text-muted py-4">Nenhum servidor cadastrado.</td></tr>
+                            <tr><td colspan="8" class="text-center text-muted py-4">Nenhum servidor cadastrado.</td></tr>
                         <?php endif; ?>
                         <?php foreach ($servidores as $s): ?>
-                        <tr>
+                        <tr data-id="<?= $s['id'] ?>">
+                            <td class="text-muted cursor-move handle">
+                                <i class="ti ti-selector fs-2"></i>
+                            </td>
                             <td data-label="Nome">
                                 <div class="d-flex align-items-center">
                                     <span class="avatar avatar-xs me-2"><i class="ti ti-server"></i></span>
