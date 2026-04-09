@@ -136,6 +136,36 @@ try {
     :fullscreen .page-wrapper { padding: 3rem 0; background: var(--tblr-body-bg); }
     :fullscreen .page-title { font-size: 2.5rem !important; justify-content: center; width: 100%; margin-bottom: 3rem; }
     :fullscreen .status-card { margin-bottom: 1rem; }
+
+    #digital-clock {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #206bc4;
+        background: rgba(32,107,196,0.1);
+        padding: 0.4rem 1rem;
+        border-radius: 50px;
+        margin-right: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: inset 0 0 10px rgba(32,107,196,0.05);
+    }
+    [data-bs-theme="dark"] #digital-clock {
+        color: #74a8f6;
+        background: rgba(116,168,246,0.1);
+    }
+    :fullscreen #digital-clock {
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        font-size: 2rem;
+        padding: 0.75rem 1.5rem;
+        z-index: 1000;
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(10px);
+        margin-right: 0;
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
@@ -149,6 +179,9 @@ try {
           </a>
         </h1>
         <div class="navbar-nav flex-row order-md-last align-items-center">
+          <div id="digital-clock" class="d-none d-sm-flex">
+             <i class="ti ti-clock"></i> <span id="clock-text">--:--:--</span>
+          </div>
           <a href="#" class="nav-link px-0 me-3" id="btn-fullscreen" title="Modo Monitoramento (Tela Cheia)" data-bs-toggle="tooltip">
             <i class="ti ti-maximize fs-2"></i>
           </a>
@@ -314,6 +347,16 @@ try {
                 btnIcon.classList.replace('ti-minimize', 'ti-maximize');
             }
         });
+
+        // Relógio Digital
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('pt-BR', { hour12: false });
+            const clockEl = document.getElementById('clock-text');
+            if (clockEl) clockEl.innerText = timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
         const logsData = <?= json_encode($logs24h) ?>;
         const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
