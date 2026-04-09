@@ -1,13 +1,39 @@
 <?php
 // admin/config.php
-$host = 'localhost'; // ou IP do servidor MySQL
-$dbname = 'portal';
-$username = 'root';
-$password = '';
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+}
+
+// Carrega variáveis de ambiente manualmente (fallback seguro)
+if (file_exists(__DIR__ . '/../.env')) {
+    $lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0) continue;
+        if (strpos($line, '=') !== false) {
+            list($name, $value) = explode('=', $line, 2);
+            $name = trim($name);
+            $value = trim($value);
+            // Remove aspas se existirem
+            $value = trim($value, '"\'');
+            $_ENV[$name] = $value;
+            putenv("$name=$value"); // Também sincroniza com getenv()
+        }
+    }
+}
+
+$host = $_ENV['DB_HOST'] ?? 'localhost';
+$dbname = $_ENV['DB_NAME'] ?? 'portal';
+$username = $_ENV['DB_USER'] ?? 'root';
+$password = $_ENV['DB_PASS'] ?? '';
+
+// Configura fuso horário para São Paulo
+date_default_timezone_set('America/Sao_Paulo');
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Sincroniza o timezone do MySQL com o do PHP
+    $pdo->exec("SET time_zone = '-03:00'");
 } catch (PDOException $e) {
     die("Erro ao conectar: " . $e->getMessage());
 }
@@ -43,4 +69,30 @@ if (in_array('Feeds RH', $user_accesses)) {
 
 $categorias_disponiveis = array_unique($categorias_disponiveis);
 
+/**
+ * Recupera um valor de configuração da tabela sys_config
+ */
+function getSysConfig($chave, $default = null) {
+    global $pdo;
+    try {
+        $stmt = $pdo->prepare("SELECT valor FROM sys_config WHERE chave = ? LIMIT 1");
+        $stmt->execute([$chave]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? $row['valor'] : $default;
+    } catch (Exception $e) {
+        return $default;
+    }
+}
+/**
+ * Grava logs de execução do Cron
+ */
+function logCron($msg) {
+    try {
+        $logFile = __DIR__ . '/../db/cron_log.txt';
+        $date = date('Y-m-d H:i:s');
+        file_put_contents($logFile, "[$date] $msg\n", FILE_APPEND);
+    } catch (Exception $e) {
+        // Silencioso se falhar o log
+    }
+}
 ?>

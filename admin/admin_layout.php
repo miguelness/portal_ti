@@ -84,6 +84,15 @@ if (!isset($user_accesses)) {
                             <i class="ti ti-sun"></i>
                         </a>
                         
+                        <!-- Agendamentos Status/QuickLink -->
+                        <?php if (hasAccess('Super Administrador', $user_accesses)): ?>
+                        <div class="nav-item d-none d-md-flex me-3">
+                            <a href="agendamentos_admin.php" class="nav-link px-0" title="Agendamentos de Scripts" data-bs-toggle="tooltip">
+                                <i class="ti ti-clock-play"></i>
+                            </a>
+                        </div>
+                        <?php endif; ?>
+
                         <!-- Notificações -->
                         <div class="nav-item dropdown d-none d-md-flex me-3">
                             <a href="#" class="nav-link px-0" data-bs-toggle="dropdown" tabindex="-1" aria-label="Show notifications" id="btn-notifications">
@@ -233,6 +242,7 @@ if (!isset($user_accesses)) {
                                     <?php if (hasAccess('Super Administrador', $user_accesses)): ?>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="servidores_admin.php">Monitorar Servidores</a>
+                                    <a class="dropdown-item" href="agendamentos_admin.php">Agendamentos (Cron)</a>
                                     <a class="dropdown-item" href="../status_servidores.php" target="_blank">Status dos Sistemas</a>
                                     <?php endif; ?>
                                 </div>
@@ -345,6 +355,23 @@ if (!isset($user_accesses)) {
             // Carrega inicialmente e a cada 60 segundos
             loadNotifications();
             setInterval(loadNotifications, 60000);
+            // Heartbeat para Agendamentos (Web Cron)
+            <?php if (hasAccess('Super Administrador', $user_accesses) && getSysConfig('web_cron_heartbeat', '1') === '1'): ?>
+            function runSchedulerHeartbeat() {
+                const token = '<?= $_ENV['CRON_TOKEN'] ?? '' ?>';
+                if (token) {
+                    fetch('../api/scheduler_runner.php?token=' + token)
+                        .then(res => res.text())
+                        .then(data => {
+                            console.log('Scheduler heartbeat processed');
+                        })
+                        .catch(err => console.error('Scheduler error:', err));
+                }
+            }
+            // Executa ao carregar e a cada 5 minutos se a aba estiver aberta
+            runSchedulerHeartbeat();
+            setInterval(runSchedulerHeartbeat, 300000); 
+            <?php endif; ?>
         });
     </script>
     

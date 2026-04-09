@@ -148,6 +148,11 @@ try {
             <i class="ti ti-activity me-2"></i>Monitoramento/Status
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="agendamentos_admin.php">
+            <i class="ti ti-clock-play me-2"></i>Agendamentos (Cron)
+          </a>
+        </li>
         <?php endif; ?>
 
         <!-- Sair -->
