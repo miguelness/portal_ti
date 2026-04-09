@@ -32,11 +32,23 @@ try {
 } catch (Exception $e) {}
 ?>
 <!doctype html>
-<html lang="pt-br" data-bs-theme="light">
+<html lang="pt-br">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Status dos Sistemas | Grupo Barão</title>
+  
+  <script>
+    (function() {
+      const themeStorageKey = 'portalTheme';
+      const isDark = localStorage.getItem(themeStorageKey) === 'dark';
+      if (isDark) {
+        document.documentElement.setAttribute('data-bs-theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-bs-theme', 'light');
+      }
+    })();
+  </script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta19/dist/css/tabler.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
   <style>
@@ -128,10 +140,10 @@ try {
           </a>
         </h1>
         <div class="navbar-nav flex-row order-md-last align-items-center">
-          <a href="#" class="nav-link px-0 hide-theme-dark me-3" id="btn-theme-dark" title="Habilitar modo escuro" data-bs-toggle="tooltip">
+          <a href="#" class="nav-link px-0 me-3 d-none" id="btn-theme-dark" title="Habilitar modo escuro" data-bs-toggle="tooltip">
             <i class="ti ti-moon fs-2"></i>
           </a>
-          <a href="#" class="nav-link px-0 hide-theme-light me-3 d-none" id="btn-theme-light" title="Habilitar modo claro" data-bs-toggle="tooltip">
+          <a href="#" class="nav-link px-0 me-3 d-none" id="btn-theme-light" title="Habilitar modo claro" data-bs-toggle="tooltip">
             <i class="ti ti-sun fs-2"></i>
           </a>
           <a href="index.php" class="btn btn-outline-primary shadow-sm rounded-pill font-weight-medium">
@@ -235,33 +247,36 @@ try {
     document.addEventListener("DOMContentLoaded", function () {
         // Theme Toggle Logic
         const themeStorageKey = 'portalTheme';
-        const isDarkStored = localStorage.getItem(themeStorageKey) === 'dark';
         
         function applyTheme(isDark) {
+            const btnDark = document.getElementById('btn-theme-dark');
+            const btnLight = document.getElementById('btn-theme-light');
+            
             if (isDark) {
                 document.documentElement.setAttribute('data-bs-theme', 'dark');
-                document.getElementById('btn-theme-dark').classList.add('d-none');
-                document.getElementById('btn-theme-light').classList.remove('d-none');
+                if(btnDark) btnDark.classList.add('d-none');
+                if(btnLight) btnLight.classList.remove('d-none');
             } else {
                 document.documentElement.setAttribute('data-bs-theme', 'light');
-                document.getElementById('btn-theme-light').classList.add('d-none');
-                document.getElementById('btn-theme-dark').classList.remove('d-none');
+                if(btnLight) btnLight.classList.add('d-none');
+                if(btnDark) btnDark.classList.remove('d-none');
             }
         }
         
+        const isDarkStored = localStorage.getItem(themeStorageKey) === 'dark';
         applyTheme(isDarkStored);
 
         document.getElementById('btn-theme-dark').addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.setItem(themeStorageKey, 'dark');
             applyTheme(true);
-            setTimeout(() => window.location.reload(), 100); // Reload para aplicar cor nova no chart
+            setTimeout(() => window.location.reload(), 50);
         });
         document.getElementById('btn-theme-light').addEventListener('click', (e) => {
             e.preventDefault();
             localStorage.setItem(themeStorageKey, 'light');
             applyTheme(false);
-            setTimeout(() => window.location.reload(), 100);
+            setTimeout(() => window.location.reload(), 50);
         });
 
         const logsData = <?= json_encode($logs24h) ?>;
