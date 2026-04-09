@@ -143,10 +143,14 @@ try {
 
         <!-- Monitoramento -->
         <?php if (hasAccess('Super Administrador', $user_accesses)): ?>
-        <li class="nav-item">
-          <a class="nav-link" href="servidores_admin.php">
-            <i class="ti ti-activity me-2"></i>Monitoramento/Status
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="monitorDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="ti ti-activity me-2"></i>Monitoramento
           </a>
+          <ul class="dropdown-menu" aria-labelledby="monitorDropdown">
+            <li><a class="dropdown-item" href="servidores_admin.php"><i class="ti ti-settings me-2"></i>Gestão de Links</a></li>
+            <li><a class="dropdown-item" href="status_servidores_admin.php" target="_blank"><i class="ti ti-device-heart-monitor me-2"></i>Status Completo (TI)</a></li>
+          </ul>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="agendamentos_admin.php">

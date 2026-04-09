@@ -27,13 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         if ($action === 'create') {
-            $stmt = $pdo->prepare("INSERT INTO monitoramento_servidores (nome, ip_ou_url, tipo, verificar_estabilidade, exibir_dashboard, tempo_bom_ms, tempo_lento_ms) VALUES (:nome, :ip_ou_url, :tipo, :verificar, :exibir, :tempo_bom, :tempo_lento)");
+            $stmt = $pdo->prepare("INSERT INTO monitoramento_servidores (nome, ip_ou_url, tipo, verificar_estabilidade, exibir_dashboard, is_public, exibir_topo, tempo_bom_ms, tempo_lento_ms) VALUES (:nome, :ip_ou_url, :tipo, :verificar, :exibir, :is_public, :exibir_topo, :tempo_bom, :tempo_lento)");
             $stmt->execute([
                 ':nome'      => $_POST['nome'] ?? '',
                 ':ip_ou_url' => trim($_POST['ip_ou_url']),
                 ':tipo'      => $_POST['tipo'] ?? 'externo',
                 ':verificar' => (int)($_POST['verificar_estabilidade'] ?? 1),
                 ':exibir'    => (int)($_POST['exibir_dashboard'] ?? 0),
+                ':is_public' => (int)($_POST['is_public'] ?? 0),
+                ':exibir_topo' => (int)($_POST['exibir_topo'] ?? 0),
                 ':tempo_bom' => (int)($_POST['tempo_bom_ms'] ?: 1500),
                 ':tempo_lento' => (int)($_POST['tempo_lento_ms'] ?: 3500)
             ]);
@@ -41,13 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } elseif ($action === 'update') {
             $id = (int)$_POST['id'];
-            $stmt = $pdo->prepare("UPDATE monitoramento_servidores SET nome = :nome, ip_ou_url = :ip_ou_url, tipo = :tipo, verificar_estabilidade = :verificar, exibir_dashboard = :exibir, tempo_bom_ms = :tempo_bom, tempo_lento_ms = :tempo_lento WHERE id = :id");
+            $stmt = $pdo->prepare("UPDATE monitoramento_servidores SET nome = :nome, ip_ou_url = :ip_ou_url, tipo = :tipo, verificar_estabilidade = :verificar, exibir_dashboard = :exibir, is_public = :is_public, exibir_topo = :exibir_topo, tempo_bom_ms = :tempo_bom, tempo_lento_ms = :tempo_lento WHERE id = :id");
             $stmt->execute([
                 ':nome'      => $_POST['nome'] ?? '',
                 ':ip_ou_url' => trim($_POST['ip_ou_url']),
                 ':tipo'      => $_POST['tipo'] ?? 'externo',
                 ':verificar' => (int)($_POST['verificar_estabilidade'] ?? 1),
                 ':exibir'    => (int)($_POST['exibir_dashboard'] ?? 0),
+                ':is_public' => (int)($_POST['is_public'] ?? 0),
+                ':exibir_topo' => (int)($_POST['exibir_topo'] ?? 0),
                 ':tempo_bom' => (int)($_POST['tempo_bom_ms'] ?: 1500),
                 ':tempo_lento' => (int)($_POST['tempo_lento_ms'] ?: 3500),
                 ':id'        => $id
@@ -217,6 +221,25 @@ ob_start();
 
                 <div class="row">
                     <div class="col-6 mb-3">
+                        <label class="form-label">Disponível ao Público?</label>
+                        <select name="is_public" id="servPublic" class="form-select">
+                            <option value="0">Não (Somente TI/Admin)</option>
+                            <option value="1">Sim (Todos Colaboradores)</option>
+                        </select>
+                        <small class="text-muted">Exibido na tela de status pública.</small>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label">Exibir no Topo da Index?</label>
+                        <select name="exibir_topo" id="servTopo" class="form-select">
+                            <option value="0">Não</option>
+                            <option value="1">Sim (Destaque Superior)</option>
+                        </select>
+                        <small class="text-muted">Cards de monitoramento no cabeçalho.</small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6 mb-3">
                         <label class="form-label">Tempo Bom (ms)</label>
                         <input type="number" name="tempo_bom_ms" id="servTempoBom" class="form-control" value="1500">
                     </div>
@@ -244,6 +267,8 @@ function openAddModal() {
     document.getElementById('servTipo').value = 'externo';
     document.getElementById('servVerificar').value = '1';
     document.getElementById('servExibir').value = '0';
+    document.getElementById('servPublic').value = '0';
+    document.getElementById('servTopo').value = '0';
     document.getElementById('servTempoBom').value = '1500';
     document.getElementById('servTempoLento').value = '3500';
     new bootstrap.Modal(document.getElementById('servidorModal')).show();
@@ -258,6 +283,8 @@ function editServidor(data) {
     document.getElementById('servTipo').value = data.tipo;
     document.getElementById('servVerificar').value = data.verificar_estabilidade;
     document.getElementById('servExibir').value = data.exibir_dashboard;
+    document.getElementById('servPublic').value = data.is_public;
+    document.getElementById('servTopo').value = data.exibir_topo;
     document.getElementById('servTempoBom').value = data.tempo_bom_ms;
     document.getElementById('servTempoLento').value = data.tempo_lento_ms;
     new bootstrap.Modal(document.getElementById('servidorModal')).show();
