@@ -396,7 +396,7 @@ try {
                     theme: isDark ? 'dark' : 'light',
                     x: {
                         show: true,
-                        format: 'dd/MM HH:mm:ss'
+                        format: 'dd/MM HH:mm'
                     },
                     y: {
                         title: { formatter: () => 'Resposta: ' },
@@ -407,7 +407,8 @@ try {
                 xaxis: {
                     type: 'datetime',
                     labels: {
-                        datetimeUTC: false
+                        datetimeUTC: false,
+                        format: 'dd/MM HH:mm'
                     }
                 }
             };
