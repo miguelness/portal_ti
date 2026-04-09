@@ -127,6 +127,15 @@ try {
     
     .navbar { background: transparent !important; border-bottom: none !important; }
     .page-header { margin-bottom: 2rem; position: relative; z-index: 10; }
+
+    /* Otimizações para Fullscreen / TV Mode */
+    :-webkit-full-screen .navbar, :-webkit-full-screen .footer, :-webkit-full-screen .badge, :-webkit-full-screen .text-muted.mt-1, :-webkit-full-screen .btn-back { display: none !important; }
+    :-ms-fullscreen .navbar, :-ms-fullscreen .footer, :-ms-fullscreen .badge, :-ms-fullscreen .text-muted.mt-1, :-ms-fullscreen .btn-back { display: none !important; }
+    :fullscreen .navbar, :fullscreen .footer, :fullscreen .badge, :fullscreen .text-muted.mt-1, :fullscreen .btn-back { display: none !important; }
+
+    :fullscreen .page-wrapper { padding: 3rem 0; background: var(--tblr-body-bg); }
+    :fullscreen .page-title { font-size: 2.5rem !important; justify-content: center; width: 100%; margin-bottom: 3rem; }
+    :fullscreen .status-card { margin-bottom: 1rem; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
@@ -140,13 +149,16 @@ try {
           </a>
         </h1>
         <div class="navbar-nav flex-row order-md-last align-items-center">
+          <a href="#" class="nav-link px-0 me-3" id="btn-fullscreen" title="Modo Monitoramento (Tela Cheia)" data-bs-toggle="tooltip">
+            <i class="ti ti-maximize fs-2"></i>
+          </a>
           <a href="#" class="nav-link px-0 me-3 d-none" id="btn-theme-dark" title="Habilitar modo escuro" data-bs-toggle="tooltip">
             <i class="ti ti-moon fs-2"></i>
           </a>
           <a href="#" class="nav-link px-0 me-3 d-none" id="btn-theme-light" title="Habilitar modo claro" data-bs-toggle="tooltip">
             <i class="ti ti-sun fs-2"></i>
           </a>
-          <a href="index.php" class="btn btn-outline-primary shadow-sm rounded-pill font-weight-medium">
+          <a href="index.php" class="btn btn-outline-primary shadow-sm rounded-pill font-weight-medium btn-back">
             <i class="ti ti-arrow-left me-1"></i> Voltar ao Portal
           </a>
         </div>
@@ -277,6 +289,30 @@ try {
             localStorage.setItem(themeStorageKey, 'light');
             applyTheme(false);
             setTimeout(() => window.location.reload(), 50);
+        });
+
+        // Fullscreen Toggle
+        document.getElementById('btn-fullscreen').addEventListener('click', (e) => {
+            e.preventDefault();
+            const btnIcon = e.currentTarget.querySelector('i');
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().then(() => {
+                    btnIcon.classList.replace('ti-maximize', 'ti-minimize');
+                }).catch(err => console.error(`Erro ao entrar em fullscreen: ${err.message}`));
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                    btnIcon.classList.replace('ti-minimize', 'ti-maximize');
+                }
+            }
+        });
+
+        // Sincroniza ícone se sair via ESC
+        document.addEventListener('fullscreenchange', () => {
+            const btnIcon = document.querySelector('#btn-fullscreen i');
+            if (!document.fullscreenElement && btnIcon) {
+                btnIcon.classList.replace('ti-minimize', 'ti-maximize');
+            }
         });
 
         const logsData = <?= json_encode($logs24h) ?>;
